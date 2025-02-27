@@ -1,6 +1,5 @@
 from flask_login import UserMixin
 from app import db
-from flask_login import UserMixin
 
 class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
@@ -25,3 +24,5 @@ class Submission(db.Model):
     language = db.Column(db.String(10), nullable=False, default='python')
     status = db.Column(db.String(20), nullable=False, default='Pending')
     timestamp = db.Column(db.DateTime, nullable=False, default=db.func.now())
+    # execution_time = db.Column(db.Float, nullable=False, default=0.0)
+    # memory_used = db.Column(db.Float, nullable=False, default=0.0)

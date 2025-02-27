@@ -93,7 +93,17 @@ def submit(problem_id):
     
     return render_template('submit.html', problem=problem)
 
+@app.route('/submissions')
+@login_required
+def submission_history():
+    show_only_mine = request.args.get('mine', 'false') == 'true'
 
+    if show_only_mine:
+        submissions = Submission.query.filter_by(user_id=current_user.id).order_by(Submission.timestamp.desc()).all()
+    else:
+        submissions = Submission.query.order_by(Submission.timestamp.desc()).all()
+
+    return render_template('submission_history.html', submissions=submissions, show_only_mine=show_only_mine)
 
 @app.route('/leaderboard')
 @login_required

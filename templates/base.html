@@ -70,6 +70,7 @@
             <a href="{{ url_for('problems') }}" class="neon-hover">Problems</a>
             <a href="{{ url_for('leaderboard') }}" class="neon-hover">Leaderboard</a>
             {% if current_user.is_authenticated %}
+                <a href="{{ url_for('submission_history') }}" class="neon-hover">Submissions</a>
                 {% if current_user.role == 'admin' %}
                     <a href="{{ url_for('admin_dashboard') }}" class="text-yellow-400 neon-hover">Admin</a>
                 {% endif %}
@@ -80,6 +81,7 @@
             {% endif %}
         </div>
     </nav>
+    
 
     <div class="container mx-auto my-10 px-6">
         {% with messages = get_flashed_messages() %}
