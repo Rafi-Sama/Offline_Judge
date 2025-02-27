@@ -39,3 +39,6 @@ if __name__ == '__main__':
         db.create_all()  # Create database tables
     app.run(host='0.0.0.0', port=5000, debug=True)
     # Start the app (e.g., app.run() or socketio.run())
+
+
+    #for testing 
