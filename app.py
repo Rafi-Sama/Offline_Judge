@@ -3,9 +3,12 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
 from config import Config  # Assuming your config is in config.py
+from extensions import socketio
 
 app = Flask(__name__)
 app.config.from_object(Config)
+
+socketio.init_app(app)  # Ensure socketio is initialized
 db = SQLAlchemy(app)
 
 login_manager = LoginManager()

@@ -1,5 +1,21 @@
 {% extends "base.html" %}
+
 {% block content %}
-    <h1>Admin Dashboard</h1>
-    <a href="{{ url_for('add_problem') }}">Add Problem</a>
+<div class="flex justify-center items-center min-h-screen">
+    <div class="glass p-8 rounded-lg w-full max-w-xl shadow-lg text-center">
+        <h1 class="text-3xl font-bold neon-text mb-6">Admin Dashboard</h1>
+        
+        <a href="{{ url_for('add_problem') }}"
+            class="block w-full p-4 rounded-lg bg-pink-500 hover:bg-pink-600 text-white font-bold transition duration-300 neon-hover">
+            Add New Problem
+        </a>
+
+        <h2 class="text-xl font-bold mt-6 text-white">Problems List</h2>
+        <ul class="text-gray-300">
+            {% for problem in problems %}
+            <li class="mt-2">{{ problem.title }} - <a href="{{ url_for('problems') }}" class="text-blue-400">View</a></li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
 {% endblock %}

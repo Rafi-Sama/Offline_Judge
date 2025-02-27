@@ -1,9 +1,19 @@
 {% extends "base.html" %}
+
 {% block content %}
-    <h1>Problems</h1>
-    <ul>
-        {% for problem in problems %}
-            <li><a href="{{ url_for('problem', id=problem.id) }}">{{ problem.title }}</a></li>
-        {% endfor %}
-    </ul>
+<div class="flex justify-center items-center min-h-screen">
+    <div class="glass p-8 rounded-lg w-full max-w-2xl shadow-lg">
+        <h1 class="text-3xl font-bold neon-text text-center mb-6">Problems</h1>
+        <ul class="space-y-4">
+            {% for problem in problems %}
+            <li>
+                <a href="{{ url_for('problem', id=problem.id) }}"
+                    class="block bg-gray-900 p-4 rounded-lg text-gray-300 hover:text-pink-400 transition duration-300 neon-hover">
+                    {{ problem.title }}
+                </a>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
 {% endblock %}

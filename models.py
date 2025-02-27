@@ -12,7 +12,7 @@ class User(db.Model, UserMixin):
 class Problem(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(100), nullable=False)
-    description = db.Column(db.Text, nullable=False)
+    description = db.Column(db.String(255), nullable=False)
     time_limit = db.Column(db.Float, nullable=False, default=1.0)  # Seconds
     memory_limit = db.Column(db.Integer, nullable=False, default=256)  # MB
     submissions = db.relationship('Submission', backref='problem', lazy=True)

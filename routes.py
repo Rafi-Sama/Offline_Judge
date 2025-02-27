@@ -58,28 +58,42 @@ def problems():
 @login_required
 def problem(id):
     problem = Problem.query.get_or_404(id)
-    with open(f"data/problems/problem_{problem.id}/description.txt", 'r') as f:
-        description = f.read()
+    path = os.path.join("data", "problems", f"problem_{problem.id}", "description.txt")
+    if os.path.exists(path):
+        with open(path, 'r', encoding="utf-8") as f:
+            description = f.read()
+    else:
+        description = "Description not available."
     return render_template('problem.html', problem=problem, description=description)
 
 @app.route('/submit/<int:problem_id>', methods=['GET', 'POST'])
 @login_required
 def submit(problem_id):
     problem = Problem.query.get_or_404(problem_id)
+    
     if request.method == 'POST':
         code = request.form['code']
+        language = request.form.get('language', 'cpp')  # Default to C++ if not selected
+        
         submission = Submission(
             user_id=current_user.id,
             problem_id=problem_id,
             code=code,
-            language='python'
+            language=language
         )
         db.session.add(submission)
         db.session.commit()
+        
+        # Ensure judge_submission updates the status before flashing
         judge_submission(submission)
-        flash(f'Submission #{submission.id} judged: {submission.status}')
+        db.session.refresh(submission)  # Ensures we get the latest status from DB
+        
+        flash(f'Submission #{submission.id} judged: {submission.status}', 'success')
         return redirect(url_for('problems'))
+    
     return render_template('submit.html', problem=problem)
+
+
 
 @app.route('/leaderboard')
 @login_required
@@ -91,34 +105,51 @@ def leaderboard():
 @login_required
 def admin_dashboard():
     if current_user.role != 'admin':
-        flash('Admin access only')
+        flash('Admin access only', 'error')
         return redirect(url_for('index'))
     return render_template('admin/dashboard.html')
 
 @app.route('/admin/add_problem', methods=['GET', 'POST'])
-@login_required
 def add_problem():
     if current_user.role != 'admin':
         return redirect(url_for('index'))
+    
     if request.method == 'POST':
-        title = request.form['title']
-        time_limit = float(request.form['time_limit'])
-        memory_limit = int(request.form['memory_limit'])
-        problem = Problem(title=title, time_limit=time_limit, memory_limit=memory_limit)
+        title = request.form.get('title', '').strip()
+        time_limit = float(request.form.get('time_limit', 1.0))  # Default: 1.0
+        memory_limit = int(request.form.get('memory_limit', 256))  # Default: 256
+        description = request.form.get('description', '').strip()
+        input_data = request.form.get('input', '').strip()
+        output_data = request.form.get('output', '').strip()
+
+        if not (title and description and input_data and output_data):
+            flash("All fields are required!", "error")
+            return redirect(url_for('admin_dashboard'))
+
+        problem = Problem(title=title, time_limit=time_limit, memory_limit=memory_limit,description="")
         db.session.add(problem)
-        db.session.commit()
-        
+        db.session.commit()  # Ensure problem.id is set
+
         # Setup problem files
         problem_dir = f"data/problems/problem_{problem.id}"
-        os.makedirs(problem_dir, exist_ok=True)
-        with open(f"{problem_dir}/description.txt", 'w') as f:
-            f.write(request.form['description'])
-        with open(f"{problem_dir}/input.txt", 'w') as f:
-            f.write(request.form['input'])
-        with open(f"{problem_dir}/output.txt", 'w') as f:
-            f.write(request.form['output'])
+
+        try:
+            os.makedirs(problem_dir, exist_ok=True)
+            with open(f"{problem_dir}/description.txt", 'w', encoding='utf-8') as f:
+                f.write(description)
+            with open(f"{problem_dir}/input.txt", 'w', encoding='utf-8') as f:
+                f.write(input_data)
+            with open(f"{problem_dir}/output.txt", 'w', encoding='utf-8') as f:
+                f.write(output_data)
+
+        except Exception as e:
+            flash(f"Error creating problem files: {e}", "error")
+            db.session.rollback()
+            return redirect(url_for('admin_dashboard'))
+
         problem.description = f"{problem_dir}/description.txt"
         db.session.commit()
-        flash('Problem added successfully')
+        flash('Problem added successfully', 'success')
         return redirect(url_for('admin_dashboard'))
+    
     return render_template('admin/add_problem.html')
