@@ -10,12 +10,20 @@
             Add New Problem
         </a>
 
-        <h2 class="text-xl font-bold mt-6 text-white">Problems List</h2>
-        <ul class="text-gray-300">
-            {% for problem in problems %}
-            <li class="mt-2">{{ problem.title }} - <a href="{{ url_for('problems') }}" class="text-blue-400">View</a></li>
-            {% endfor %}
-        </ul>
+        <a href="{{ url_for('manage_problems') }}"
+            class="block w-full mt-4 p-4 rounded-lg bg-purple-500 hover:bg-purple-600 text-white font-bold transition duration-300 neon-hover">
+            Manage Problems
+        </a>
+
+        <a href="{{ url_for('manage_users') }}"
+            class="block w-full mt-4 p-4 rounded-lg bg-blue-500 hover:bg-blue-600 text-white font-bold transition duration-300 neon-hover">
+            Manage Users
+        </a>
+
+        <a href="{{ url_for('manage_submissions') }}"
+            class="block w-full mt-4 p-4 rounded-lg bg-yellow-500 hover:bg-yellow-600 text-white font-bold transition duration-300 neon-hover">
+            Manage Submissions
+        </a>
     </div>
 </div>
 {% endblock %}

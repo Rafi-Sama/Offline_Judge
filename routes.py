@@ -117,7 +117,12 @@ def admin_dashboard():
     if current_user.role != 'admin':
         flash('Admin access only', 'error')
         return redirect(url_for('index'))
-    return render_template('admin/dashboard.html')
+    
+    users = User.query.all()
+    problems = Problem.query.all()
+    submissions = Submission.query.all()
+
+    return render_template('admin/dashboard.html', users=users, problems=problems, submissions=submissions)
 
 @app.route('/admin/add_problem', methods=['GET', 'POST'])
 def add_problem():
@@ -163,3 +168,48 @@ def add_problem():
         return redirect(url_for('admin_dashboard'))
     
     return render_template('admin/add_problem.html')
+
+@app.route('/manage_problems')
+@login_required
+def manage_problems():
+    problems = Problem.query.all()
+    return render_template('admin/manage_problems.html', problems=problems)
+
+@app.route('/manage_users')
+@login_required
+def manage_users():
+    users = User.query.all()
+    return render_template('admin/manage_users.html', users=users)
+
+@app.route('/manage_submissions')
+@login_required
+def manage_submissions():
+    submissions = Submission.query.all()
+    return render_template('admin/manage_submissions.html', submissions=submissions)
+
+@app.route('/delete_problem/<int:problem_id>', methods=['POST'])
+@login_required
+def delete_problem(problem_id):
+    problem = Problem.query.get_or_404(problem_id)
+    db.session.delete(problem)
+    db.session.commit()
+    return redirect(url_for('manage_problems'))
+
+@app.route('/delete_user/<int:user_id>', methods=['POST'])
+@login_required
+def delete_user(user_id):
+    user = User.query.get_or_404(user_id)
+    if user.id == current_user.id:
+        return redirect(url_for('manage_users'))  # Prevent self-deletion
+    db.session.delete(user)
+    db.session.commit()
+    return redirect(url_for('manage_users'))
+
+@app.route('/delete_submission/<int:submission_id>', methods=['POST'])
+@login_required
+def delete_submission(submission_id):
+    submission = Submission.query.get_or_404(submission_id)
+    db.session.delete(submission)
+    db.session.commit()
+    return redirect(url_for('manage_submissions'))
+
