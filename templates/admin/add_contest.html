@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="flex justify-center items-center min-h-screen">
+    <div class="glass p-8 rounded-lg w-full max-w-lg shadow-lg text-center">
+        <h1 class="text-3xl font-bold neon-text mb-6">Add New Contest</h1>
+
+        <form method="POST">
+            <input type="text" name="name" placeholder="Contest Name" required
+                class="w-full p-3 mb-4 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 outline-none">
+            
+            <label class="block text-left font-bold">Start Time:</label>
+            <input type="datetime-local" name="start_time" required
+                class="w-full p-3 mb-4 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 outline-none">
+            
+            <label class="block text-left font-bold">End Time:</label>
+            <input type="datetime-local" name="end_time" required
+                class="w-full p-3 mb-4 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 outline-none">
+            
+            <button type="submit"
+                class="w-full p-3 bg-green-500 hover:bg-green-600 text-white font-bold rounded-lg transition duration-300 neon-hover">
+                Add Contest
+            </button>
+        </form>
+    </div>
+</div>
+{% endblock %}
