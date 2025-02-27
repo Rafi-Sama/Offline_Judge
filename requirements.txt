@@ -1,0 +1,5 @@
+flask==2.3.3
+flask-sqlalchemy==3.0.5
+flask-login==0.6.3
+flask-socketio==5.3.6
+werkzeug==3.0.1

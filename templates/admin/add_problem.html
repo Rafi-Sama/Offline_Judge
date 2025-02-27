@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block content %}
+    <h1>Add Problem</h1>
+    <form method="POST">
+        <label>Title: <input type="text" name="title" required></label><br>
+        <label>Time Limit (s): <input type="number" step="0.1" name="time_limit" value="1.0" required></label><br>
+        <label>Memory Limit (MB): <input type="number" name="memory_limit" value="256" required></label><br>
+        <label>Description: <textarea name="description" rows="5" required></textarea></label><br>
+        <label>Test Input: <textarea name="input" rows="5" required></textarea></label><br>
+        <label>Expected Output: <textarea name="output" rows="5" required></textarea></label><br>
+        <button type="submit">Add Problem</button>
+    </form>
+{% endblock %}
