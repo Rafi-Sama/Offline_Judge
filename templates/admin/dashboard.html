@@ -4,9 +4,19 @@
 <div class="flex justify-center items-center min-h-screen">
     <div class="glass p-8 rounded-lg w-full max-w-xl shadow-lg text-center">
         <h1 class="text-3xl font-bold neon-text mb-6">Admin Dashboard</h1>
-        
+
+        <a href="{{ url_for('add_contest') }}"
+            class="block w-full p-4 rounded-lg bg-green-500 hover:bg-green-600 text-white font-bold transition duration-300 neon-hover">
+            Add New Contest
+        </a>
+
+        <a href="{{ url_for('manage_contests') }}"
+            class="block w-full mt-4 p-4 rounded-lg bg-red-500 hover:bg-red-600 text-white font-bold transition duration-300 neon-hover">
+            Manage Contests
+        </a>
+
         <a href="{{ url_for('add_problem') }}"
-            class="block w-full p-4 rounded-lg bg-pink-500 hover:bg-pink-600 text-white font-bold transition duration-300 neon-hover">
+            class="block w-full mt-4 p-4 rounded-lg bg-pink-500 hover:bg-pink-600 text-white font-bold transition duration-300 neon-hover">
             Add New Problem
         </a>
 

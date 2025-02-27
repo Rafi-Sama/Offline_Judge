@@ -2,10 +2,16 @@ import os
 from flask import render_template, request, redirect, url_for, flash
 from flask_login import login_user, logout_user, login_required, current_user
 from app import app, db
-from models import User, Problem, Submission
+from models import User, Problem, Submission, Contest, ContestParticipant
 from werkzeug.security import generate_password_hash, check_password_hash
 from judging import judge_submission, calculate_standings
 from app import login_manager
+from datetime import datetime
+from flask import jsonify
+from sqlalchemy import and_
+
+
+
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -106,7 +112,7 @@ def submission_history():
     return render_template('submission_history.html', submissions=submissions, show_only_mine=show_only_mine)
 
 @app.route('/leaderboard')
-@login_required
+# @login_required
 def leaderboard():
     standings = calculate_standings()
     return render_template('leaderboard.html', standings=standings)
@@ -213,3 +219,79 @@ def delete_submission(submission_id):
     db.session.commit()
     return redirect(url_for('manage_submissions'))
 
+@app.route('/contests', endpoint='get_contests')
+def get_contests():
+    # Get the current time
+    current_time = datetime.utcnow()
+    
+    # Query ongoing, upcoming, and past contests
+    ongoing_contests = Contest.query.filter(Contest.end_time > current_time).all()
+    upcoming_contests = Contest.query.filter(Contest.start_time > current_time).all()
+    past_contests = Contest.query.filter(Contest.end_time < current_time).all()
+
+    # Render the contests template with the contest data
+    return render_template(
+        'contests.html',
+        ongoing_contests=ongoing_contests,
+        upcoming_contests=upcoming_contests,
+        past_contests=past_contests
+    )
+
+@app.route('/admin/add_contest', methods=['GET', 'POST'])
+@login_required
+def add_contest():
+    if current_user.role != 'admin':
+        flash('Admin access only', 'error')
+        return redirect(url_for('index'))
+
+    if request.method == 'POST':
+        name = request.form['name']
+        start_time = datetime.strptime(request.form['start_time'], '%Y-%m-%dT%H:%M')
+        end_time = datetime.strptime(request.form['end_time'], '%Y-%m-%dT%H:%M')
+
+        contest = Contest(name=name, start_time=start_time, end_time=end_time)
+        db.session.add(contest)
+        db.session.commit()
+        flash("Contest added successfully!", "success")
+        return redirect(url_for('admin_dashboard'))
+
+    return render_template('admin/add_contest.html')
+
+@app.route('/admin/manage_contests')
+@login_required
+def manage_contests():
+    if current_user.role != 'admin':
+        flash('Admin access only', 'error')
+        return redirect(url_for('index'))
+    
+    contests = Contest.query.all()
+    return render_template('admin/manage_contests.html', contests=contests)
+
+@app.route('/admin/delete_contest/<int:contest_id>', methods=['POST'])
+@login_required
+def delete_contest(contest_id):
+    if current_user.role != 'admin':
+        flash('Admin access only', 'error')
+        return redirect(url_for('index'))
+    
+    contest = Contest.query.get(contest_id)
+    if contest:
+        db.session.delete(contest)
+        db.session.commit()
+        flash("Contest deleted successfully!", "success")
+    else:
+        flash("Contest not found.", "danger")
+
+    return redirect(url_for('manage_contests'))
+
+@app.route('/contest/<int:contest_id>')
+def contest_detail(contest_id):
+    contest = Contest.query.get_or_404(contest_id)
+    problem_sets = contest.problem_sets  # Assuming you have related problem sets
+    participation_options = contest.participation_options if contest.participation_options else []  # Similarly for participation options
+    return render_template('contest_detail.html', contest=contest, problem_sets=problem_sets, participation_options=participation_options)
+
+@app.route('/join_contest/<int:contest_id>', methods=['POST'])
+def join_contest(contest_id):
+    # Your logic for joining a contest
+    pass
