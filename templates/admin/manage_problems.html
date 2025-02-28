@@ -4,20 +4,27 @@
 <div class="flex justify-center items-center min-h-screen">
     <div class="glass p-8 rounded-lg w-full max-w-xl shadow-lg text-center">
         <h1 class="text-3xl font-bold neon-text mb-6">Manage Problems</h1>
-
         <ul class="text-gray-300">
             {% for problem in problems %}
-            <li class="mt-2 flex justify-between items-center">
-                <span>{{ problem.title }}</span>
+            <li class="mt-2 flex flex-col md:flex-row justify-between items-start md:items-center border-b border-gray-400 pb-2">
+                <div class="text-left">
+                    <p class="text-lg font-semibold">{{ problem.title }}</p>
+                    <p class="text-sm">
+                        Contest: 
+                        {% if problem.contest_id %}
+                            {{ problem.contest_id }}
+                        {% else %}
+                            None
+                        {% endif %}
+                    </p>
+                </div>
                 <form method="POST" action="{{ url_for('delete_problem', problem_id=problem.id) }}">
                     <button type="submit" class="bg-red-500 text-white px-2 py-1 rounded text-sm">Delete</button>
                 </form>
             </li>
             {% endfor %}
         </ul>
-
-        <a href="{{ url_for('admin_dashboard') }}"
-            class="block mt-4 p-4 rounded-lg bg-gray-500 hover:bg-gray-600 text-white font-bold transition duration-300">
+        <a href="{{ url_for('admin_dashboard') }}" class="block mt-4 p-4 rounded-lg bg-gray-500 hover:bg-gray-600 text-white font-bold transition duration-300">
             Back to Dashboard
         </a>
     </div>

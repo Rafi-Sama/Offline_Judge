@@ -148,25 +148,20 @@ def manage_problems():
     problems = Problem.query.all()  # fetch all problems
     return render_template('admin/manage_problems.html', problems=problems)  # render manage problems page
 
-@app.route('/manage_users')
-@login_required
-def manage_users():
-    users = User.query.all()  # fetch all users
-    return render_template('admin/manage_users.html', users=users)  # render manage users page
-
 @app.route('/manage_submissions')
 @login_required
 def manage_submissions():
     submissions = Submission.query.all()  # fetch all submissions
     return render_template('admin/manage_submissions.html', submissions=submissions)  # render manage submissions page
 
-@app.route('/delete_problem/<int:problem_id>', methods=['POST'])
+@app.route('/manage_users')
 @login_required
-def delete_problem(problem_id):
-    problem = Problem.query.get_or_404(problem_id)  # fetch problem or 404
-    db.session.delete(problem)  # delete problem record
-    db.session.commit()  # commit deletion
-    return redirect(url_for('manage_problems'))  # redirect to manage problems
+def manage_users():
+    if current_user.role != 'admin':  # Ensure only admins can access
+        flash('Admin access only', 'error')  # flash error message
+        return redirect(url_for('index'))  # redirect to home page
+    users = User.query.all()  # Fetch all users
+    return render_template('admin/manage_users.html', users=users)
 
 @app.route('/delete_user/<int:user_id>', methods=['POST'])
 @login_required
@@ -176,6 +171,14 @@ def delete_user(user_id):
     db.session.delete(user)  # delete user record
     db.session.commit()  # commit deletion
     return redirect(url_for('manage_users'))  # redirect to manage users
+
+@app.route('/delete_problem/<int:problem_id>', methods=['POST'])
+@login_required
+def delete_problem(problem_id):
+    problem = Problem.query.get_or_404(problem_id)  # fetch problem or 404
+    db.session.delete(problem)  # delete problem record
+    db.session.commit()  # commit deletion
+    return redirect(url_for('manage_problems'))  # redirect to manage problems
 
 @app.route('/delete_submission/<int:submission_id>', methods=['POST'])
 @login_required
@@ -201,8 +204,19 @@ def add_contest():
         return redirect(url_for('index'))  # redirect to home page
     if request.method == 'POST':  # process contest addition form
         name = request.form['name']  # retrieve contest name
-        start_time = datetime.strptime(request.form['start_time'], '%Y-%m-%dT%H:%M')  # parse start time
-        end_time = datetime.strptime(request.form['end_time'], '%Y-%m-%dT%H:%M')  # parse end time
+        try:
+            start_time = datetime.strptime(request.form['start_time'], '%Y-%m-%dT%H:%M')  # parse start time
+            end_time = datetime.strptime(request.form['end_time'], '%Y-%m-%dT%H:%M')  # parse end time
+        except ValueError:
+            flash("Invalid date format. Please use the correct format.", "error")  # flash error if date parsing fails
+            return render_template('admin/add_contest.html')
+        now = datetime.utcnow()  # current UTC time
+        if start_time <= now:  # ensure contest starts in the future
+            flash("Contest start time must be in the future.", "error")
+            return render_template('admin/add_contest.html')
+        if end_time <= start_time:  # ensure contest ends after it starts
+            flash("Contest end time must be after the start time.", "error")
+            return render_template('admin/add_contest.html')
         contest = Contest(name=name, start_time=start_time, end_time=end_time)  # create contest record
         db.session.add(contest)  # add contest to session
         db.session.commit()  # commit contest

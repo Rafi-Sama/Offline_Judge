@@ -5,6 +5,7 @@ from app import db  # database instance
 class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)  # unique identifier
     username = db.Column(db.String(20), unique=True, nullable=False)  # username field
+    email = db.Column(db.String(120), unique=True, nullable=False)  # email is stored
     password = db.Column(db.String(60), nullable=False)  # password field
     role = db.Column(db.String(10), nullable=False, default='participant')  # user role, default participant
     submissions = db.relationship('Submission', backref='user', lazy=True)  # related submissions

@@ -11,7 +11,10 @@ app.config.from_object(Config)  # load configuration
 
 socketio.init_app(app)  # initialize real-time communication
 db = SQLAlchemy(app)  # set up ORM
-with app.app_context(): db.create_all()  # create all database tables
+
+with app.app_context():  # ensure operations run within application context
+    if not os.path.exists(os.path.join("data", "site.db")):  # check if database file does not exist
+        db.create_all()  # create all database tables
 
 migrate = Migrate(app, db)  # enable database migrations
 

@@ -2,21 +2,39 @@
 
 {% block content %}
 <div class="flex justify-center items-center min-h-screen">
-    <div class="glass p-8 rounded-lg w-full max-w-xl shadow-lg text-center">
+    <div class="glass p-8 rounded-lg w-full max-w-4xl shadow-lg text-center">
         <h1 class="text-3xl font-bold neon-text mb-6">Manage Users</h1>
 
-        <ul class="text-gray-300">
-            {% for user in users %}
-            <li class="mt-2 flex justify-between items-center">
-                <span>{{ user.username }} ({{ user.role }})</span>
-                {% if user.id != current_user.id %}
-                <form method="POST" action="{{ url_for('delete_user', user_id=user.id) }}">
-                    <button type="submit" class="bg-red-500 text-white px-2 py-1 rounded text-sm">Delete</button>
-                </form>
-                {% endif %}
-            </li>
-            {% endfor %}
-        </ul>
+        <table class="w-full text-gray-300 border border-gray-500">
+            <thead>
+                <tr class="bg-gray-700">
+                    <th class="px-4 py-2">ID</th>
+                    <th class="px-4 py-2">Username</th>
+                    <th class="px-4 py-2">Email</th>
+                    <th class="px-4 py-2">Role</th>
+                    <th class="px-4 py-2">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for user in users %}
+                <tr class="border border-gray-500">
+                    <td class="px-4 py-2">{{ user.id }}</td>
+                    <td class="px-4 py-2">{{ user.username }}</td>
+                    <td class="px-4 py-2">{{ user.email }}</td>  <!-- Display email -->
+                    <td class="px-4 py-2">{{ user.role }}</td>
+                    <td class="px-4 py-2">
+                        {% if user.id != current_user.id %}
+                        <form method="POST" action="{{ url_for('delete_user', user_id=user.id) }}">
+                            <button type="submit" class="bg-red-500 text-white px-3 py-1 rounded text-sm">
+                                Delete
+                            </button>
+                        </form>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
 
         <a href="{{ url_for('admin_dashboard') }}"
             class="block mt-4 p-4 rounded-lg bg-gray-500 hover:bg-gray-600 text-white font-bold transition duration-300">
