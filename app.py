@@ -1,41 +1,31 @@
-import os
-from flask import Flask
-from flask_sqlalchemy import SQLAlchemy
-from flask_login import LoginManager
-from config import Config  # Assuming your config is in config.py
-from extensions import socketio
-from flask_migrate import Migrate
+import os  # OS operations
+from flask import Flask  # web framework
+from flask_sqlalchemy import SQLAlchemy  # ORM support
+from flask_login import LoginManager  # user session management
+from config import Config  # configuration settings
+from extensions import socketio  # real-time communication
+from flask_migrate import Migrate  # database migrations
 
+app = Flask(__name__)  # instantiate Flask app
+app.config.from_object(Config)  # load configuration
 
-app = Flask(__name__)
-app.config.from_object(Config)
+socketio.init_app(app)  # initialize real-time communication
+db = SQLAlchemy(app)  # set up ORM
+with app.app_context(): db.create_all()  # create all database tables
 
-socketio.init_app(app)  # Ensure socketio is initialized
-db = SQLAlchemy(app)
-with app.app_context():
-    db.create_all()  # Creates tables based on your models 
+migrate = Migrate(app, db)  # enable database migrations
 
+login_manager = LoginManager()  # create login manager
+login_manager.init_app(app)  # initialize login management
+login_manager.login_view = "login"  # set login route
 
-migrate = Migrate(app, db)  # 'app' is your Flask app, 'db' is your SQLAlchemy instance
+from routes import *  # import route definitions
 
+def home(): return "Welcome to the Offline Judge!"  # define home endpoint
 
-login_manager = LoginManager()
-login_manager.init_app(app)
-login_manager.login_view = "login"  # Redirect users who are not logged in
+data_dir = os.path.join(os.path.dirname(__file__), 'data')  # determine data directory path
+os.makedirs(data_dir, exist_ok=True)  # ensure data directory exists
 
-from routes import *
-
-# @app.route('/')
-def home():
-    return "Welcome to the Offline Judge!"
-# Ensure the 'data' directory exists
-data_dir = os.path.join(os.path.dirname(__file__), 'data')
-if not os.path.exists(data_dir):
-    os.makedirs(data_dir)
-
-# Rest of your code...
 if __name__ == '__main__':
-    with app.app_context():
-        db.create_all()  # Create database tables
-    app.run(host='0.0.0.0', port=5000, debug=True)
-    # Start the app (e.g., app.run() or socketio.run())
+    with app.app_context(): db.create_all()  # ensure tables exist within context
+    app.run(host='0.0.0.0', port=5000, debug=True)  # run the application
