@@ -21,6 +21,15 @@ class Problem(db.Model):
     category = db.Column(db.String(50), nullable=True)  # problem category
     problem_set_id = db.Column(db.Integer, db.ForeignKey('problem_set.id'), nullable=True)  # linked problem set
 
+class TestCase(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    problem_id = db.Column(db.Integer, db.ForeignKey('problem.id',ondelete="CASCADE"), nullable=False)
+    input_data = db.Column(db.Text, nullable=False)
+    output_data = db.Column(db.Text, nullable=False)
+    is_sample = db.Column(db.Boolean, default=False)  # Checkbox for sample test case
+
+    problem = db.relationship('Problem', backref=db.backref('test_cases', lazy=True))
+
 class ProblemSet(db.Model):
     id = db.Column(db.Integer, primary_key=True)  # unique identifier
     name = db.Column(db.String(100), nullable=False)  # problem set name

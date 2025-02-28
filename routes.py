@@ -2,7 +2,7 @@ import os  # OS operations
 from flask import render_template, request, redirect, url_for, flash  # HTML rendering, request handling, redirection, flash messaging
 from flask_login import login_user, logout_user, login_required, current_user  # session management functions
 from app import app, db  # application instance and database
-from models import User, Problem, Submission, Contest, ContestParticipant  # model definitions
+from models import User, Problem, Submission, Contest, ContestParticipant, TestCase  # model definitions
 from werkzeug.security import generate_password_hash, check_password_hash  # password security utilities
 from judging import judge_submission, calculate_standings  # judging and standings functions
 from app import login_manager  # login manager instance
@@ -34,11 +34,12 @@ def login():
 def register():
     if request.method == 'POST':  # process registration form
         username = request.form['username']  # retrieve username
+        email = request.form['email']  # retrieve email
         password = request.form['password']  # retrieve password
         if User.query.filter_by(username=username).first():  # check if username exists
             flash('Username already exists')  # flash error message
         else:
-            user = User(username=username, password=generate_password_hash(password))  # create new user with hashed password
+            user = User(username=username, email=email, password=generate_password_hash(password))  # create new user with hashed password
             db.session.add(user)  # add user to session
             db.session.commit()  # commit new user
             flash('Registration successful! Please log in.')  # flash success message
@@ -61,12 +62,11 @@ def problems():
 @login_required
 def problem(id):
     problem = Problem.query.get_or_404(id)  # fetch problem by ID or 404
-    path = os.path.join("data", "problems", f"problem_{problem.id}", "description.txt")  # build description file path
-    if os.path.exists(path):  # check if description file exists
-        with open(path, 'r', encoding="utf-8") as f: description = f.read()  # read file content
-    else:
-        description = "Description not available."  # fallback description
-    return render_template('problem.html', problem=problem, description=description)  # render problem detail page
+    description = problem.description if problem.description else "Description not available."
+    sample_test_cases = []  # empty sample test cases
+    sample_test_cases = TestCase.query.filter_by(problem_id=id, is_sample=True).all()
+    return render_template('problem.html', problem=problem, description=description, sample_test_cases=sample_test_cases)  # render problem detail page
+    
 
 @app.route('/submit/<int:problem_id>', methods=['GET', 'POST'])
 @login_required
@@ -112,35 +112,40 @@ def admin_dashboard():
 
 @app.route('/admin/add_problem', methods=['GET', 'POST'])
 def add_problem():
-    if current_user.role != 'admin':  # restrict access to admin
-        return redirect(url_for('index'))  # redirect to home page
-    if request.method == 'POST':  # process add problem form
-        title = request.form.get('title', '').strip()  # retrieve and trim title
-        time_limit = float(request.form.get('time_limit', 1.0))  # retrieve time limit
-        memory_limit = int(request.form.get('memory_limit', 256))  # retrieve memory limit
-        description = request.form.get('description', '').strip()  # retrieve and trim description
-        input_data = request.form.get('input', '').strip()  # retrieve and trim input data
-        output_data = request.form.get('output', '').strip()  # retrieve and trim output data
-        if not (title and description and input_data and output_data):  # validate required fields
-            flash("All fields are required!", "error")  # flash error message
-            return redirect(url_for('admin_dashboard'))  # redirect to admin dashboard
-        problem = Problem(title=title, time_limit=time_limit, memory_limit=memory_limit, description="")  # create problem record
-        db.session.add(problem)  # add problem to session
-        db.session.commit()  # commit to obtain problem ID
-        problem_dir = f"data/problems/problem_{problem.id}"  # build problem directory path
-        try:
-            os.makedirs(problem_dir, exist_ok=True)  # create problem directory
-            for fname, content in [('description.txt', description), ('input.txt', input_data), ('output.txt', output_data)]:
-                with open(os.path.join(problem_dir, fname), 'w', encoding='utf-8') as f: f.write(content)  # create problem files
-        except Exception as e:
-            flash(f"Error creating problem files: {e}", "error")  # flash error message
-            db.session.rollback()  # rollback session
-            return redirect(url_for('admin_dashboard'))  # redirect to admin dashboard
-        problem.description = f"{problem_dir}/description.txt"  # update description field with file path
-        db.session.commit()  # commit update
-        flash('Problem added successfully', 'success')  # flash success message
-        return redirect(url_for('admin_dashboard'))  # redirect to admin dashboard
-    return render_template('admin/add_problem.html')  # render add problem page
+    if current_user.role != 'admin':
+        return redirect(url_for('index'))
+
+    if request.method == 'POST':
+        title = request.form.get('title', '').strip()
+        time_limit = float(request.form.get('time_limit', 1.0))
+        memory_limit = int(request.form.get('memory_limit', 256))
+        description = request.form.get('description', '').strip()
+
+        problem = Problem(title=title, time_limit=time_limit, memory_limit=memory_limit, description=description)
+        db.session.add(problem)
+        db.session.commit()
+
+        # Handling multiple test cases
+        test_inputs = request.form.getlist('input[]')
+        test_outputs = request.form.getlist('output[]')
+        sample_flags = request.form.getlist('sample[]')  # Gets checked values
+
+        for i in range(len(test_inputs)):
+            is_sample = sample_flags[i] == 'on' if i < len(sample_flags) else False
+            test_case = TestCase(
+                problem_id=problem.id,
+                input_data=test_inputs[i].strip(),
+                output_data=test_outputs[i].strip(),
+                is_sample=is_sample
+            )
+            db.session.add(test_case)
+
+        db.session.commit()
+        flash('Problem added successfully', 'success')
+        return redirect(url_for('admin_dashboard'))
+
+    return render_template('admin/add_problem.html')
+
 
 @app.route('/manage_problems')
 @login_required
@@ -166,6 +171,8 @@ def manage_users():
 @app.route('/delete_user/<int:user_id>', methods=['POST'])
 @login_required
 def delete_user(user_id):
+    if current_user.role != 'admin':
+        return redirect(url_for('index'))
     user = User.query.get_or_404(user_id)  # fetch user or 404
     if user.id == current_user.id: return redirect(url_for('manage_users'))  # prevent self-deletion
     db.session.delete(user)  # delete user record
@@ -175,9 +182,19 @@ def delete_user(user_id):
 @app.route('/delete_problem/<int:problem_id>', methods=['POST'])
 @login_required
 def delete_problem(problem_id):
+    if current_user.role != 'admin':
+        return redirect(url_for('index'))
     problem = Problem.query.get_or_404(problem_id)  # fetch problem or 404
-    db.session.delete(problem)  # delete problem record
-    db.session.commit()  # commit deletion
+    if problem:
+        # Delete test cases first
+        TestCase.query.filter_by(problem_id=problem_id).delete()
+        Submission.query.filter_by(problem_id=problem_id).delete()
+        Problem.query.filter_by(id=problem_id).delete()
+        db.session.delete(problem)
+        db.session.commit()
+        flash("Problem deleted successfully", "success")
+    else:
+        flash("Problem not found", "error")
     return redirect(url_for('manage_problems'))  # redirect to manage problems
 
 @app.route('/delete_submission/<int:submission_id>', methods=['POST'])

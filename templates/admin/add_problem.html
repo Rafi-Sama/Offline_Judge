@@ -4,7 +4,7 @@
 <div class="flex justify-center items-center min-h-screen">
     <div class="glass p-8 rounded-lg w-full max-w-3xl shadow-lg">
         <h1 class="text-3xl font-bold neon-text text-center mb-6">Add a New Problem</h1>
-        <form method="POST" class="space-y-6">
+        <form method="POST">
             <div>
                 <label class="block text-gray-300 font-semibold">Title</label>
                 <input type="text" name="title" required
@@ -30,23 +30,54 @@
                     class="w-full p-3 rounded-lg bg-gray-900 text-gray-300 border border-gray-700 focus:ring-2 focus:ring-blue-500 transition"></textarea>
             </div>
 
-            <div>
-                <label class="block text-gray-300 font-semibold">Test Input</label>
-                <textarea name="input" rows="5" required
-                    class="w-full p-3 rounded-lg bg-gray-900 text-gray-300 border border-gray-700 focus:ring-2 focus:ring-blue-500 transition"></textarea>
+            <!-- Test Cases Section -->
+            <div id="test-cases-container">
+                <label class="block text-gray-300 font-semibold">Test Cases</label>
+                <div class="test-case">
+                    <label class="text-gray-300">Test Input</label>
+                    <textarea name="input[]" rows="3"
+                        class="w-full p-3 rounded-lg bg-gray-900 text-gray-300 border border-gray-700 focus:ring-2 focus:ring-blue-500 transition"></textarea>
+
+                    <label class="text-gray-300">Expected Output</label>
+                    <textarea name="output[]" rows="3"
+                        class="w-full p-3 rounded-lg bg-gray-900 text-gray-300 border border-gray-700 focus:ring-2 focus:ring-blue-500 transition"></textarea>
+
+                    <label class="text-gray-300 flex items-center">
+                        <input type="checkbox" name="sample[]" class="mr-2" value="on"> Mark as Sample Test Case
+                    </label>
+                </div>
             </div>
 
-            <div>
-                <label class="block text-gray-300 font-semibold">Expected Output</label>
-                <textarea name="output" rows="5" required
-                    class="w-full p-3 rounded-lg bg-gray-900 text-gray-300 border border-gray-700 focus:ring-2 focus:ring-blue-500 transition"></textarea>
-            </div>
+            <button type="button" id="add-test-case"
+                class="mt-4 p-2 bg-green-500 hover:bg-green-600 text-white rounded font-bold">+ Add Another Test Case</button>
 
             <button type="submit"
-                class="w-full p-3 rounded-lg bg-blue-500 hover:bg-blue-600 text-white font-bold transition duration-300 neon-hover">
+                class="w-full mt-6 p-3 rounded-lg bg-blue-500 hover:bg-blue-600 text-white font-bold transition duration-300">
                 Add Problem
             </button>
         </form>
     </div>
 </div>
+
+<script>
+    document.getElementById('add-test-case').addEventListener('click', function () {
+        let container = document.getElementById('test-cases-container');
+        let newTestCase = document.createElement('div');
+        newTestCase.classList.add('test-case', 'mt-4');
+        newTestCase.innerHTML = `
+            <label class="text-gray-300">Test Input</label>
+            <textarea name="input[]" rows="3"
+                class="w-full p-3 rounded-lg bg-gray-900 text-gray-300 border border-gray-700 focus:ring-2 focus:ring-blue-500 transition"></textarea>
+
+            <label class="text-gray-300">Expected Output</label>
+            <textarea name="output[]" rows="3"
+                class="w-full p-3 rounded-lg bg-gray-900 text-gray-300 border border-gray-700 focus:ring-2 focus:ring-blue-500 transition"></textarea>
+
+            <label class="text-gray-300 flex items-center">
+                <input type="checkbox" name="sample[]" class="mr-2"> Mark as Sample Test Case
+            </label>
+        `;
+        container.appendChild(newTestCase);
+    });
+</script>
 {% endblock %}
