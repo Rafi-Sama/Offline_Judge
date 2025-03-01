@@ -8,7 +8,9 @@ from judging import judge_submission, calculate_standings  # judging and standin
 from app import login_manager  # login manager instance
 from datetime import datetime  # datetime utilities
 from flask import jsonify  # JSON responses
-from sqlalchemy import and_  # SQL logical operator
+from sqlalchemy import and_, or_  # SQL logical operator
+from collections import defaultdict
+
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -53,10 +55,65 @@ def logout():
     return redirect(url_for('index'))  # redirect to home page
 
 @app.route('/problems')
-@login_required
 def problems():
-    problems = Problem.query.all()  # fetch all problems
-    return render_template('problems.html', problems=problems)  # render problems list
+    search_query = request.args.get('search', '')
+    category_filter = request.args.get('category', '')
+    difficulty_filter = request.args.get('difficulty', '')
+    selected_tags = request.args.getlist('tags')
+
+    problems = Problem.query.all()
+    solvers_count = calculate_solvers_per_problem()  # Get the number of solvers for each problem
+
+    # Apply search and filters
+    filtered_problems = []
+    for problem in problems:
+        if search_query and search_query.lower() not in problem.title.lower():
+            continue
+        if category_filter and problem.category != category_filter:
+            continue
+        if difficulty_filter and problem.difficulty != difficulty_filter:
+            continue
+        if selected_tags and not any(tag in problem.tags for tag in selected_tags):
+            continue
+        filtered_problems.append((problem, solvers_count.get(problem.id, 0)))  # Attach solver count
+
+    # Sorting logic (default: most solved first)
+    sort_by = request.args.get('sort', 'solvers')
+    order = request.args.get('order', 'desc')
+    reverse_order = order == 'desc'
+    if sort_by == 'solvers':
+        filtered_problems.sort(key=lambda x: x[1], reverse=reverse_order)
+    else:
+        filtered_problems.sort(key=lambda x: getattr(x[0], sort_by), reverse=reverse_order)
+
+    difficulties = ['Easy', 'Medium', 'Hard', 'Extreme']
+    tags = ["brute_force", "math", "dp", "greedy", "graph", "sorting", "binary_search", "bitwise", "recursion"]
+
+    return render_template(
+        'problems.html',
+        problems=filtered_problems,
+        search_query=search_query,
+        category_filter=category_filter,
+        difficulty_filter=difficulty_filter,
+        selected_tags=selected_tags,
+        difficulties=difficulties,
+        tags=tags
+    )
+
+
+def calculate_solvers_per_problem():
+    """Counts how many unique users solved each problem."""
+    solvers_count = defaultdict(int)
+    
+    # Fetch all users and their accepted submissions
+    users = User.query.filter_by(role='participant').all()
+    for user in users:
+        solved_problems = Submission.query.filter_by(user_id=user.id, status='Accepted').distinct(Submission.problem_id).all()
+        for submission in solved_problems:
+            solvers_count[submission.problem_id] += 1  # count unique solvers per problem
+            
+    return solvers_count
+
 
 @app.route('/problem/<int:id>')
 @login_required
@@ -120,18 +177,33 @@ def add_problem():
         time_limit = float(request.form.get('time_limit', 1.0))
         memory_limit = int(request.form.get('memory_limit', 256))
         description = request.form.get('description', '').strip()
+        difficulty = request.form.get('difficulty', 'Easy').strip()
+        tags = request.form.getlist('tags[]')
 
-        problem = Problem(title=title, time_limit=time_limit, memory_limit=memory_limit, description=description)
+        # Convert tags list to a comma-separated string
+        tags_string = ",".join(tags) if tags else None
+
+        # Create a new problem entry
+        problem = Problem(
+            title=title,
+            time_limit=time_limit,
+            memory_limit=memory_limit,
+            description=description,
+            difficulty=difficulty,
+            tags=tags_string
+        )
+
         db.session.add(problem)
         db.session.commit()
 
-        # Handling multiple test cases
+        # Retrieve test case inputs & outputs
         test_inputs = request.form.getlist('input[]')
         test_outputs = request.form.getlist('output[]')
-        sample_flags = request.form.getlist('sample[]')  # Gets checked values
+        sample_indices = request.form.getlist('sample[]')  # List of indexes marked as sample
 
         for i in range(len(test_inputs)):
-            is_sample = sample_flags[i] == 'on' if i < len(sample_flags) else False
+            is_sample = str(i) in sample_indices  # Check if the index exists in the list
+
             test_case = TestCase(
                 problem_id=problem.id,
                 input_data=test_inputs[i].strip(),
@@ -145,6 +217,8 @@ def add_problem():
         return redirect(url_for('admin_dashboard'))
 
     return render_template('admin/add_problem.html')
+
+
 
 
 @app.route('/manage_problems')
@@ -285,22 +359,25 @@ def edit_problem(problem_id):
         problem.description = request.form.get('description')
         problem.time_limit = float(request.form.get('time_limit', 1.0))
         problem.memory_limit = int(request.form.get('memory_limit', 256))
+        problem.difficulty = request.form.get('difficulty', 'Easy').strip()  # Update difficulty
 
-        # Get test case inputs and outputs
+        # Update tags
+        tags = request.form.getlist('tags[]')  # Get tags as a list
+        problem.tags = ",".join(tags) if tags else None  # Convert to a comma-separated string
+
+        # Clear and update test cases
+        TestCase.query.filter_by(problem_id=problem.id).delete()
+
         inputs = request.form.getlist('input[]')
         outputs = request.form.getlist('output[]')
         sample_cases = request.form.getlist('sample[]')  # Gets list of checked indexes
 
-        # Clear existing test cases
-        TestCase.query.filter_by(problem_id=problem.id).delete()
-
-        # Add updated test cases
         for i in range(len(inputs)):
             test_case = TestCase(
                 problem_id=problem.id,
                 input_data=inputs[i],
                 output_data=outputs[i],
-                is_sample=(str(i+1) in sample_cases)  # Check if marked as sample
+                is_sample=(str(i+1) in sample_cases)
             )
             db.session.add(test_case)
 
@@ -309,5 +386,3 @@ def edit_problem(problem_id):
         return redirect(url_for('manage_problems'))
 
     return render_template('admin/edit_problem.html', problem=problem)
-
-

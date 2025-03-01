@@ -20,6 +20,8 @@ class Problem(db.Model):
     contest_id = db.Column(db.Integer, db.ForeignKey('contest.id'), nullable=True)  # associated contest
     category = db.Column(db.String(50), nullable=True)  # problem category
     problem_set_id = db.Column(db.Integer, db.ForeignKey('problem_set.id'), nullable=True)  # linked problem set
+    difficulty = db.Column(db.String(10), nullable=False, default='Easy')  # Easy, Medium, Hard, Extreme
+    tags = db.Column(db.String(255), nullable=True)  # Will store tags as a comma-separated string
 
 class TestCase(db.Model):
     id = db.Column(db.Integer, primary_key=True)

@@ -29,6 +29,35 @@
                 <textarea name="description" rows="5" required
                     class="w-full p-3 rounded-lg bg-gray-900 text-gray-300 border border-gray-700 focus:ring-2 focus:ring-blue-500 transition">{{ problem.description }}</textarea>
             </div>
+                        <!-- Difficulty Level -->
+                        <div>
+                            <label class="block text-gray-300 font-semibold">Difficulty Level</label>
+                            <select name="difficulty" required
+                                class="w-full p-3 rounded-lg bg-gray-900 text-gray-300 border border-gray-700 focus:ring-2 focus:ring-blue-500 transition">
+                                <option value="Easy">🟢 Easy</option>
+                                <option value="Medium">🟠 Medium</option>
+                                <option value="Hard">🔴 Hard</option>
+                                <option value="Extreme">⚫ Extreme</option>
+                            </select>
+                        </div>
+            
+                        <!-- Problem Tags -->
+                        <div>
+                            <label class="block text-gray-300 font-semibold">Tags</label>
+                            <select name="tags[]" required 
+                                class="w-full p-3 rounded-lg bg-gray-900 text-gray-300 border border-gray-700 focus:ring-2 focus:ring-blue-500 transition">
+                                <option value="brute_force">💪 Brute Force</option>
+                                <option value="math">📐 Math</option>
+                                <option value="dp">📊 Dynamic Programming</option>
+                                <option value="greedy">🤖 Greedy</option>
+                                <option value="graph">🕸️ Graphs</option>
+                                <option value="sorting">🔀 Sorting</option>
+                                <option value="binary_search">🔎 Binary Search</option>
+                                <option value="bitwise">🧩 Bitwise</option>
+                                <option value="recursion">🔄 Recursion</option>
+                            </select>
+                            <small class="text-gray-400">Hold Ctrl (Cmd on Mac) to select multiple tags.</small>
+                        </div>
 
             <label class="block text-gray-300 font-semibold">Test Cases</label>
             <div id="test-cases-container">
