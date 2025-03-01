@@ -275,3 +275,39 @@ def contest_detail(contest_id):
 @app.route('/join_contest/<int:contest_id>', methods=['POST'])
 def join_contest(contest_id):
     pass  # implement joining contest logic
+
+@app.route('/edit_problem/<int:problem_id>', methods=['GET', 'POST'])
+def edit_problem(problem_id):
+    problem = Problem.query.get_or_404(problem_id)
+
+    if request.method == 'POST':
+        problem.title = request.form.get('title')
+        problem.description = request.form.get('description')
+        problem.time_limit = float(request.form.get('time_limit', 1.0))
+        problem.memory_limit = int(request.form.get('memory_limit', 256))
+
+        # Get test case inputs and outputs
+        inputs = request.form.getlist('input[]')
+        outputs = request.form.getlist('output[]')
+        sample_cases = request.form.getlist('sample[]')  # Gets list of checked indexes
+
+        # Clear existing test cases
+        TestCase.query.filter_by(problem_id=problem.id).delete()
+
+        # Add updated test cases
+        for i in range(len(inputs)):
+            test_case = TestCase(
+                problem_id=problem.id,
+                input_data=inputs[i],
+                output_data=outputs[i],
+                is_sample=(str(i+1) in sample_cases)  # Check if marked as sample
+            )
+            db.session.add(test_case)
+
+        db.session.commit()
+        flash("Problem updated successfully!", "success")
+        return redirect(url_for('manage_problems'))
+
+    return render_template('admin/edit_problem.html', problem=problem)
+
+

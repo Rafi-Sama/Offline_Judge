@@ -2,25 +2,21 @@
 
 {% block content %}
 <div class="flex justify-center items-center min-h-screen">
-    <div class="glass p-8 rounded-lg w-full max-w-xl shadow-lg text-center">
+    <div class="glass p-8 rounded-lg w-full max-w-3xl shadow-lg text-center">
         <h1 class="text-3xl font-bold neon-text mb-6">Manage Problems</h1>
         <ul class="text-gray-300">
             {% for problem in problems %}
-            <li class="mt-2 flex flex-col md:flex-row justify-between items-start md:items-center border-b border-gray-400 pb-2">
+            <li class="mt-4 p-4 border-b border-gray-400 flex flex-col md:flex-row justify-between items-start md:items-center">
                 <div class="text-left">
                     <p class="text-lg font-semibold">{{ problem.title }}</p>
-                    <p class="text-sm">
-                        Contest: 
-                        {% if problem.contest_id %}
-                            {{ problem.contest_id }}
-                        {% else %}
-                            None
-                        {% endif %}
-                    </p>
+                    <p class="text-sm">Time Limit: {{ problem.time_limit }}s | Memory Limit: {{ problem.memory_limit }}MB</p>
                 </div>
-                <form method="POST" action="{{ url_for('delete_problem', problem_id=problem.id) }}">
-                    <button type="submit" class="bg-red-500 text-white px-2 py-1 rounded text-sm">Delete</button>
-                </form>
+                <div class="flex space-x-2">
+                    <a href="{{ url_for('edit_problem', problem_id=problem.id) }}" class="bg-blue-500 text-white px-3 py-1 rounded text-sm">Edit</a>
+                    <form method="POST" action="{{ url_for('delete_problem', problem_id=problem.id) }}">
+                        <button type="submit" class="bg-red-500 text-white px-3 py-1 rounded text-sm">Delete</button>
+                    </form>
+                </div>
             </li>
             {% endfor %}
         </ul>
