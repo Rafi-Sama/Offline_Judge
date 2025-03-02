@@ -1,26 +1,48 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="flex justify-center items-center min-h-screen">
-    <div class="glass p-8 rounded-lg w-full max-w-xl shadow-lg text-center">
-        <h1 class="text-3xl font-bold neon-text mb-6">Manage Users</h1>
+<div class="flex justify-center items-center min-h-screen bg-gray-950 py-10">
+    <div class="glass p-8 rounded-lg w-full max-w-4xl shadow-lg border border-gray-700">
+        <h1 class="text-3xl font-bold neon-text text-center mb-6">👥 Manage Users</h1>
 
-        <ul class="text-gray-300">
-            {% for user in users %}
-            <li class="mt-2 flex justify-between items-center">
-                <span>{{ user.username }} ({{ user.role }})</span>
-                {% if user.id != current_user.id %}
-                <form method="POST" action="{{ url_for('delete_user', user_id=user.id) }}">
-                    <button type="submit" class="bg-red-500 text-white px-2 py-1 rounded text-sm">Delete</button>
-                </form>
-                {% endif %}
-            </li>
-            {% endfor %}
-        </ul>
+        <div class="overflow-x-auto">
+            <table class="w-full text-gray-300 border border-gray-700 rounded-lg overflow-hidden">
+                <thead class="bg-gray-800 text-gray-200 uppercase text-sm">
+                    <tr>
+                        <th class="px-5 py-3 text-left">ID</th>
+                        <th class="px-5 py-3 text-left">Username</th>
+                        <th class="px-5 py-3 text-left">Email</th>
+                        <th class="px-5 py-3 text-left">Role</th>
+                        <th class="px-5 py-3 text-center">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for user in users %}
+                        <tr class="border-b border-gray-700 hover:bg-gray-800 transition duration-300">
+                            <td class="px-5 py-4">{{ user.id }}</td>
+                            <td class="px-5 py-4 font-semibold text-blue-400">{{ user.username }}</td>
+                            <td class="px-5 py-4 text-gray-400">{{ user.email }}</td>
+                            <td class="px-5 py-4 font-medium">{{ user.role }}</td>
+                            <td class="px-5 py-4 text-center">
+                                {% if user.id != current_user.id %}
+                                    <form method="POST" action="{{ url_for('delete_user', user_id=user.id) }}" class="inline">
+                                        <button type="submit" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg shadow-md transition duration-300">
+                                            ❌ Delete
+                                        </button>
+                                    </form>
+                                {% else %}
+                                    <span class="text-gray-500">🚫 Cannot Delete</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
 
-        <a href="{{ url_for('admin_dashboard') }}"
-            class="block mt-4 p-4 rounded-lg bg-gray-500 hover:bg-gray-600 text-white font-bold transition duration-300">
-            Back to Dashboard
+        <a href="{{ url_for('admin_dashboard') }}" 
+           class="block mt-6 p-4 rounded-lg bg-gray-700 hover:bg-gray-800 text-white font-bold transition duration-300 text-center shadow-md">
+            🔙 Back to Dashboard
         </a>
     </div>
 </div>

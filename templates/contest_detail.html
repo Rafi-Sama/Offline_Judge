@@ -1,39 +1,43 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="flex justify-center items-center min-h-screen overflow-x-hidden w-full">
-    <div class="glass p-8 rounded-lg w-full max-w-4xl shadow-lg">
-        <h1 class="text-3xl font-bold neon-text text-center mb-6">{{ contest.name }}</h1>
+<div class="flex justify-center items-center min-h-screen overflow-x-hidden w-full px-4">
+    <div class="glass p-8 rounded-xl w-full max-w-4xl shadow-2xl">
+        <h1 class="text-4xl font-bold neon-text text-center mb-8">{{ contest.name }}</h1>
         
-        <div class="flex flex-col gap-6 w-full">
-            <div class="bg-gray-800 p-6 rounded-lg mb-6">
-                <p class="text-gray-200 font-medium">Description: {{ contest.description }}</p>
-                <p class="text-sm text-gray-400">Start Time: {{ contest.start_time.strftime('%Y-%m-%d %H:%M:%S') }}</p>
-                <p class="text-sm text-gray-400">End Time: {{ contest.end_time.strftime('%Y-%m-%d %H:%M:%S') }}</p>
+        <div class="flex flex-col gap-8 w-full">
+            <!-- Contest Description -->
+            <div class="bg-gray-900 p-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300">
+                <p class="text-gray-300 font-medium text-lg">📝 {{ contest.description }}</p>
+                <p class="text-sm text-gray-500 mt-3">⏳ Start: {{ contest.start_time.strftime('%Y-%m-%d %H:%M:%S') }}</p>
+                <p class="text-sm text-gray-500">🏁 End: {{ contest.end_time.strftime('%Y-%m-%d %H:%M:%S') }}</p>
             </div>
 
-            <div class="bg-gray-800 p-6 rounded-lg mb-6">
-                <h2 class="text-xl font-bold text-gray-300 mb-4">Problem Sets</h2>
-                <ul>
+            <!-- Problem Sets -->
+            <div class="bg-gray-900 p-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300">
+                <h2 class="text-2xl font-bold text-blue-400 mb-4">🚀 Problem Sets</h2>
+                <ul class="list-disc list-inside text-gray-300">
                     {% for problem in problem_sets %}
-                        <li class="text-gray-200">{{ problem.name }}</li>
+                        <li class="hover:text-blue-300 transition-all duration-200">{{ problem.name }}</li>
                     {% endfor %}
                 </ul>
             </div>
 
-            <div class="bg-gray-800 p-6 rounded-lg mb-6">
-                <h2 class="text-xl font-bold text-gray-300 mb-4">Participation Options</h2>
-                <ul>
+            <!-- Participation Options -->
+            <div class="bg-gray-900 p-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300">
+                <h2 class="text-2xl font-bold text-yellow-400 mb-4">👥 Participation Options</h2>
+                <ul class="list-disc list-inside text-gray-300">
                     {% for option in participation_options %}
-                        <li class="text-gray-200">{{ option.name }} - {{ option.details }}</li>
+                        <li class="hover:text-yellow-300 transition-all duration-200">{{ option.name }} - {{ option.details }}</li>
                     {% endfor %}
                 </ul>
             </div>
 
-            <div class="bg-gray-800 p-6 rounded-lg mb-6">
-                <h2 class="text-xl font-bold text-gray-300 mb-4">Join Contest</h2>
+            <!-- Join Contest -->
+            <div class="bg-gray-900 p-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300">
+                <h2 class="text-2xl font-bold text-green-400 mb-4">🎯 Join Contest</h2>
                 <form action="{{ url_for('join_contest', contest_id=contest.id) }}" method="POST">
-                    <button type="submit" class="bg-blue-600 hover:bg-blue-500 text-white p-3 rounded-lg w-full">Join Now</button>
+                    <button type="submit" class="neon-button w-full">Join Now</button>
                 </form>
             </div>
         </div>

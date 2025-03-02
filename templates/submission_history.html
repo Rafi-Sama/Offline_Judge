@@ -2,47 +2,52 @@
 
 {% block content %}
 <div class="text-center mt-16">
-    <h1 class="text-4xl font-extrabold neon-text">Submission History</h1>
+    <h1 class="text-4xl font-extrabold neon-text">📜 Submission History</h1>
 
-    <div class="mt-6">
-        <label class="flex justify-center items-center space-x-2 cursor-pointer">
-            <input type="checkbox" id="mineOnly" class="hidden" onchange="toggleSubmissions()" {% if show_only_mine %}checked{% endif %}>
-            <div class="w-6 h-6 border-2 border-cyan-300 rounded-md flex justify-center items-center hover:border-cyan-500 transition">
-                <span id="checkbox-icon" class="{% if show_only_mine %}block{% else %}hidden{% endif %} text-cyan-400">✔</span>
-            </div>
-            <span class="text-cyan-300 neon-hover">Show Only My Submissions</span>
+    <!-- Toggle Switch -->
+    <div class="mt-6 flex justify-center items-center">
+        <span class="mr-3 text-cyan-300 neon-hover text-lg">Show Only My Submissions</span>
+        <label class="relative inline-flex items-center cursor-pointer">
+            <input type="checkbox" id="mineOnly" class="sr-only peer" onchange="toggleSubmissions()" {% if show_only_mine %}checked{% endif %}>
+            <div class="w-14 h-7 bg-gray-700 peer-focus:ring-2 peer-focus:ring-cyan-400 rounded-full peer peer-checked:after:translate-x-7 after:content-[''] after:absolute after:left-1 after:top-1 after:bg-cyan-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-cyan-500"></div>
         </label>
     </div>
 
-    <div class="mt-8 mx-auto w-3/4 glass p-6 glow-border">
-        <table class="w-full text-gray-300">
-            <thead class="text-cyan-400 border-b border-cyan-400">
-                <tr>
-                    <th class="py-2">ID</th>
-                    <th class="py-2">User</th>
-                    <th class="py-2">Time</th>
-                    <th class="py-2">Problem</th>
-                    <th class="py-2">Lang</th>
-                    <th class="py-2">Status</th>
-                    <!-- <th class="py-2">Exec Time</th>
-                    <th class="py-2">Memory</th> -->
-                    <th class="py-2">Code</th>
+    <!-- Submission Table -->
+    <div class="mt-8 mx-auto w-11/12 lg:w-3/4 glass p-6 glow-border overflow-x-auto rounded-lg shadow-lg">
+        <table class="w-full text-gray-300 border-collapse">
+            <thead class="text-cyan-400 border-b-2 border-cyan-500 sticky top-0 bg-gray-900">
+                <tr class="text-lg">
+                    <th class="py-3">ID</th>
+                    <th class="py-3">User</th>
+                    <th class="py-3">Time</th>
+                    <th class="py-3">Problem</th>
+                    <th class="py-3">Lang</th>
+                    <th class="py-3">Status</th>
+                    <th class="py-3">Code</th>
                 </tr>
             </thead>
             <tbody>
                 {% for sub in submissions %}
-                <tr class="border-b border-gray-600 hover:bg-gray-800">
-                    <td class="py-2">{{ sub.id }}</td>
-                    <td class="py-2">{{ sub.user.username }}</td>
-                    <td class="py-2">{{ sub.timestamp }}</td>
-                    <td class="py-2">{{ sub.problem.title }}</td>
-                    <td class="py-2">{{ sub.language }}</td>
-                    <td class="py-2 {% if sub.status == 'Accepted' %}text-green-400{% else %}text-red-400{% endif %}">{{ sub.status }}</td>
-                    <!-- <td class="py-2">{{ sub.execution_time }} ms</td>
-                    <td class="py-2">{{ sub.memory_used }} KB</td> -->
-                    <td class="py-2">
-                        <button class="neon-button text-xs px-2 py-1" onclick="toggleCode({{ sub.id }})">View</button>
-                        <pre id="code-{{ sub.id }}" class="hidden bg-gray-900 text-gray-300 p-2 mt-2 rounded-md">{{ sub.code }}</pre>
+                <tr class="border-b border-gray-700 hover:bg-gray-800 transition duration-200">
+                    <td class="py-3 px-4 text-center">{{ sub.id }}</td>
+                    <td class="py-3 px-4 text-center">{{ sub.user.username }}</td>
+                    <td class="py-3 px-4 text-center">{{ sub.timestamp.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+                    <td class="py-3 px-4 text-center">
+                        <a href="{{ url_for('problem', id=sub.problem.id) }}" class="text-blue-400 hover:underline font-medium">
+                            {{ sub.problem.title }}
+                        </a>
+                    </td>
+                    <td class="py-3 px-4 text-center">{{ sub.language }}</td>
+                    <td class="py-3 px-4 text-center">
+                        <span class="px-2 py-1 text-sm rounded-md {% if sub.status == 'Accepted' %}bg-green-600 text-green-200{% else %}bg-red-600 text-red-200{% endif %} shadow-md">
+                            {{ sub.status }}
+                        </span>
+                    </td>
+                    <td class="py-3 px-4 text-center">
+                        <button class="neon-button text-xs px-3 py-1 rounded-lg transition hover:scale-105" onclick="openModal({{ sub.id }}, `{{ sub.code|escape }}`, `{{ sub.language }}`)">
+                            View
+                        </button>
                     </td>
                 </tr>
                 {% endfor %}
@@ -51,6 +56,20 @@
     </div>
 </div>
 
+<!-- Code Modal -->
+<div id="codeModal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-60 hidden">
+    <div class="bg-gray-900 text-gray-300 p-6 rounded-lg w-11/12 md:w-3/5 lg:w-2/5 relative shadow-xl">
+        <button onclick="closeModal()" class="absolute top-2 right-3 text-gray-400 hover:text-white text-xl">✖</button>
+        <h2 id="modalTitle" class="text-lg font-semibold text-cyan-400 mb-3"></h2>
+        <pre id="modalCode" class="bg-gray-800 p-3 rounded-md text-sm overflow-auto max-h-80 border border-cyan-500"></pre>
+        <button onclick="copyCode()" class="mt-3 px-4 py-1 bg-cyan-500 hover:bg-cyan-600 text-white rounded-md">
+            📋 Copy
+        </button>
+        <span id="copyConfirmation" class="ml-2 text-green-400 text-sm hidden">Copied!</span>
+    </div>
+</div>
+
+<!-- JavaScript -->
 <script>
     function toggleSubmissions() {
         let url = new URL(window.location.href);
@@ -58,8 +77,23 @@
         window.location.href = url.toString();
     }
 
-    function toggleCode(id) {
-        document.getElementById(`code-${id}`).classList.toggle("hidden");
+    function openModal(id, code, lang) {
+        document.getElementById("modalTitle").textContent = `Submission #${id} (${lang})`;
+        document.getElementById("modalCode").textContent = code;
+        document.getElementById("codeModal").classList.remove("hidden");
+    }
+
+    function closeModal() {
+        document.getElementById("codeModal").classList.add("hidden");
+    }
+
+    function copyCode() {
+        let codeText = document.getElementById("modalCode").textContent;
+        navigator.clipboard.writeText(codeText).then(() => {
+            let confirmation = document.getElementById("copyConfirmation");
+            confirmation.classList.remove("hidden");
+            setTimeout(() => confirmation.classList.add("hidden"), 1500);
+        });
     }
 </script>
 {% endblock %}

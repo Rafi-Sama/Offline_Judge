@@ -4,78 +4,110 @@
 <div class="flex justify-center items-center min-h-screen">
     <div class="glass p-8 rounded-lg w-96 shadow-lg">
         <h1 class="text-3xl font-bold neon-text text-center">Register</h1>
-        <form method="POST" onsubmit="return validateForm()" class="mt-6">
-            <label class="block text-gray-300 mb-2">Full Name</label>
-            <input type="text" name="full_name" required
-                class="w-full p-3 bg-transparent border border-gray-400 rounded-lg focus:border-pink-400 focus:ring-2 focus:ring-pink-400 outline-none transition">
+        <form method="POST" onsubmit="return validateForm()" class="mt-6 space-y-4">
+            
+            <div>
+                <label class="block text-gray-300 mb-2">Full Name</label>
+                <input type="text" name="full_name" required
+                    class="input-field">
+            </div>
 
-            <label class="block text-gray-300 mt-4 mb-2">Email</label>
-            <input type="email" name="email" id="email" required
-                class="w-full p-3 bg-transparent border border-gray-400 rounded-lg focus:border-pink-400 focus:ring-2 focus:ring-pink-400 outline-none transition">
-            <p id="email-error" class="text-red-500 text-sm mt-1 hidden">Invalid email format.</p>
+            <div>
+                <label class="block text-gray-300 mb-2">Email</label>
+                <input type="email" name="email" id="email" required oninput="validateEmail()"
+                    class="input-field">
+                <p id="email-error" class="error-message hidden">Invalid email format.</p>
+            </div>
 
-            <label class="block text-gray-300 mt-4 mb-2">Username</label>
-            <input type="text" name="username" required
-                class="w-full p-3 bg-transparent border border-gray-400 rounded-lg focus:border-pink-400 focus:ring-2 focus:ring-pink-400 outline-none transition">
+            <div>
+                <label class="block text-gray-300 mb-2">Username</label>
+                <input type="text" name="username" required
+                    class="input-field">
+            </div>
 
-            <label class="block text-gray-300 mt-4 mb-2">Password</label>
-            <input type="password" name="password" id="password" required
-                class="w-full p-3 bg-transparent border border-gray-400 rounded-lg focus:border-pink-400 focus:ring-2 focus:ring-pink-400 outline-none transition">
-            <p id="password-error" class="text-red-500 text-sm mt-1 hidden">
-                Password must be 8+ characters, include 1 uppercase, 1 number, and 1 special character.
-            </p>
+            <div>
+                <label class="block text-gray-300 mb-2">Password</label>
+                <input type="password" name="password" id="password" required oninput="validatePassword()"
+                    class="input-field">
+                <p id="password-error" class="error-message hidden">
+                    Must be 8+ characters, include 1 uppercase, 1 number, and 1 special character.
+                </p>
+            </div>
 
-            <label class="block text-gray-300 mt-4 mb-2">Confirm Password</label>
-            <input type="password" name="confirm_password" id="confirm-password" required
-                class="w-full p-3 bg-transparent border border-gray-400 rounded-lg focus:border-pink-400 focus:ring-2 focus:ring-pink-400 outline-none transition">
-            <p id="confirm-error" class="text-red-500 text-sm mt-1 hidden">Passwords do not match.</p>
+            <div>
+                <label class="block text-gray-300 mb-2">Confirm Password</label>
+                <input type="password" name="confirm_password" id="confirm-password" required oninput="validateConfirmPassword()"
+                    class="input-field">
+                <p id="confirm-error" class="error-message hidden">Passwords do not match.</p>
+            </div>
 
             <button type="submit"
-                class="neon-button bg-pink-500 hover:bg-pink-600 w-full mt-6">
+                class="neon-button bg-pink-500 hover:bg-pink-600 w-full mt-4 transition-transform transform hover:scale-105">
                 Register
             </button>
         </form>
-        <p class="mt-4 text-center text-gray-400">Already have an account? <a href="{{ url_for('login') }}" class="neon-hover">Login</a></p>
+
+        <p class="mt-4 text-center text-gray-400">
+            Already have an account? 
+            <a href="{{ url_for('login') }}" class="neon-hover">Login</a>
+        </p>
     </div>
 </div>
 
+<style>
+    .input-field {
+        width: 100%;
+        padding: 0.75rem;
+        background: transparent;
+        border: 1px solid #aaa;
+        border-radius: 8px;
+        transition: 0.3s;
+        outline: none;
+    }
+    
+    .input-field:focus {
+        border-color: #ff79c6;
+        box-shadow: 0 0 10px rgba(255, 121, 198, 0.5);
+    }
+
+    .error-message {
+        color: #ff5555;
+        font-size: 0.875rem;
+        margin-top: 0.25rem;
+    }
+</style>
+
 <script>
-    function validateForm() {
+    function validateEmail() {
         let email = document.getElementById("email").value;
-        let password = document.getElementById("password").value;
-        let confirmPassword = document.getElementById("confirm-password").value;
-
         let emailError = document.getElementById("email-error");
-        let passwordError = document.getElementById("password-error");
-        let confirmError = document.getElementById("confirm-error");
-
         let emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+        emailError.classList.toggle("hidden", emailPattern.test(email));
+    }
+
+    function validatePassword() {
+        let password = document.getElementById("password").value;
+        let passwordError = document.getElementById("password-error");
         let passwordPattern = /^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
 
-        let valid = true;
+        passwordError.classList.toggle("hidden", passwordPattern.test(password));
+    }
 
-        if (!emailPattern.test(email)) {
-            emailError.classList.remove("hidden");
-            valid = false;
-        } else {
-            emailError.classList.add("hidden");
-        }
+    function validateConfirmPassword() {
+        let password = document.getElementById("password").value;
+        let confirmPassword = document.getElementById("confirm-password").value;
+        let confirmError = document.getElementById("confirm-error");
 
-        if (!passwordPattern.test(password)) {
-            passwordError.classList.remove("hidden");
-            valid = false;
-        } else {
-            passwordError.classList.add("hidden");
-        }
+        confirmError.classList.toggle("hidden", password === confirmPassword);
+    }
 
-        if (password !== confirmPassword) {
-            confirmError.classList.remove("hidden");
-            valid = false;
-        } else {
-            confirmError.classList.add("hidden");
-        }
-
-        return valid;
+    function validateForm() {
+        validateEmail();
+        validatePassword();
+        validateConfirmPassword();
+        
+        return document.querySelectorAll(".error-message:not(.hidden)").length === 0;
     }
 </script>
 {% endblock %}

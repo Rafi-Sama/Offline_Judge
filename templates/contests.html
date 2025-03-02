@@ -1,27 +1,33 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="flex justify-center items-center min-h-screen overflow-x-hidden w-full">
-    <div class="glass p-8 rounded-lg w-full max-w-4xl shadow-lg">
-        <h1 class="text-3xl font-bold neon-text text-center mb-6">Contests</h1>
+<div class="flex justify-center items-center min-h-screen overflow-x-hidden w-full bg-gray-950">
+    <div class="glass p-8 rounded-lg w-full max-w-4xl shadow-xl backdrop-blur-md glow-border">
+        <h1 class="text-4xl font-extrabold neon-text text-center mb-6">🏆 Contests</h1>
 
         <div class="flex flex-col gap-6 w-full">
             {% set contest_sections = [
-                ('Ongoing Contests', ongoing_contests, 'Ends', 'end_time'),
-                ('Upcoming Contests', upcoming_contests, 'Starts', 'start_time'),
-                ('Past Contests', past_contests, 'Ended', 'end_time')
+                ('🔥 Ongoing Contests', ongoing_contests, 'Ends', 'end_time'),
+                ('⏳ Upcoming Contests', upcoming_contests, 'Starts', 'start_time'),
+                ('📅 Past Contests', past_contests, 'Ended', 'end_time')
             ] %}
 
             {% for title, contests, label, time_attr in contest_sections %}
                 <div class="w-full">
-                    <h2 class="text-xl font-bold text-gray-300 mb-4">{{ title }}</h2>
-                    {% for contest in contests %}
-                        <a href="{{ url_for('contest_detail', contest_id=contest.id) }}" 
-                           class="bg-gray-800 p-6 mb-6 rounded-lg hover:bg-gray-700 transition w-full flex flex-col">
-                            <p class="text-gray-200 font-medium">{{ contest.name }}</p>
-                            <p class="text-sm text-gray-400">{{ label }}: {{ contest[time_attr].strftime('%Y-%m-%d %H:%M:%S') }}</p>
-                        </a>
-                    {% endfor %}
+                    <h2 class="text-2xl font-bold text-cyan-400 mb-4">{{ title }}</h2>
+                    {% if contests %}
+                        {% for contest in contests %}
+                            <a href="{{ url_for('contest_detail', contest_id=contest.id) }}" 
+                               class="bg-gray-900 p-5 mb-4 rounded-lg hover:bg-gray-800 transition w-full flex flex-col shadow-md border border-gray-700 hover:border-cyan-400">
+                                <p class="text-xl font-semibold text-gray-200">{{ contest.name }}</p>
+                                <p class="text-sm text-gray-400 flex items-center gap-2 mt-1">
+                                    🕒 <span>{{ label }}: {{ contest[time_attr].strftime('%Y-%m-%d %H:%M:%S') }}</span>
+                                </p>
+                            </a>
+                        {% endfor %}
+                    {% else %}
+                        <p class="text-gray-400 italic">No contests available.</p>
+                    {% endif %}
                 </div>
             {% endfor %}
         </div>

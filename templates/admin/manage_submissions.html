@@ -1,24 +1,42 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="flex justify-center items-center min-h-screen">
-    <div class="glass p-8 rounded-lg w-full max-w-xl shadow-lg text-center">
-        <h1 class="text-3xl font-bold neon-text mb-6">Manage Submissions</h1>
+<div class="flex justify-center items-center min-h-screen bg-gray-950 py-10"> 
+    <div class="glass p-8 rounded-lg w-full max-w-2xl shadow-lg border border-gray-700">
+        <h1 class="text-3xl font-bold neon-text text-center mb-6 text-white">📜 Manage Submissions</h1>
+        
+        <div class="overflow-hidden rounded-lg">
+            <ul class="text-white divide-y divide-gray-700">
+                {% for submission in submissions %}
+                    <li class="p-4 flex justify-between items-center bg-gray-800 hover:bg-gray-700 transition duration-300">
+                        <div>
+                            <p class="text-lg font-semibold">
+                                Submission #{{ submission.id }} - 
+                                <span class="{% if submission.status == 'Accepted' %}text-green-400{% elif submission.status == 'Rejected' %}text-red-400{% else %}text-yellow-400{% endif %}">
+                                    {{ submission.status }}
+                                </span>
+                            </p>
+                            <p class="text-sm text-gray-300">
+                                👤 User: <span class="text-gray-100">{{ submission.user.username }}</span> &nbsp;|&nbsp;
+                                🆔 Problem: <span class="text-gray-100">{{ submission.problem.id }}</span> 
+                                {% if submission.problem.contest_id %}
+                                    &nbsp;|&nbsp; 🏆 Contest: <span class="text-gray-100">{{ submission.problem.contest_id }}</span>
+                                {% endif %}
+                            </p>
+                        </div>
+                        <form method="POST" action="{{ url_for('delete_submission', submission_id=submission.id) }}">
+                            <button type="submit" class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded-lg shadow-md transition duration-300">
+                                ❌ Delete
+                            </button>
+                        </form>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
 
-        <ul class="text-gray-300">
-            {% for submission in submissions %}
-            <li class="mt-2 flex justify-between items-center">
-                <span>Submission #{{ submission.id }} - {{ submission.status }}</span>
-                <form method="POST" action="{{ url_for('delete_submission', submission_id=submission.id) }}">
-                    <button type="submit" class="bg-red-500 text-white px-2 py-1 rounded text-sm">Delete</button>
-                </form>
-            </li>
-            {% endfor %}
-        </ul>
-
-        <a href="{{ url_for('admin_dashboard') }}"
-            class="block mt-4 p-4 rounded-lg bg-gray-500 hover:bg-gray-600 text-white font-bold transition duration-300">
-            Back to Dashboard
+        <a href="{{ url_for('admin_dashboard') }}" 
+           class="block mt-6 p-4 rounded-lg bg-gray-700 hover:bg-gray-800 text-white font-bold transition duration-300 text-center shadow-md">
+            🔙 Back to Dashboard
         </a>
     </div>
 </div>
