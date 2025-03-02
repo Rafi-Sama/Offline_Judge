@@ -5,29 +5,53 @@
     <div class="glass p-8 rounded-xl w-full max-w-4xl shadow-2xl">
         <h1 class="text-4xl font-bold neon-text text-center mb-8">{{ contest.name }}</h1>
         
-        <div class="flex flex-col gap-8 w-full">
-            <!-- Contest Description -->
-            <div class="bg-gray-900 p-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300">
-                <p class="text-gray-300 font-medium text-lg">📝 {{ contest.description }}</p>
-                <p class="text-sm text-gray-500 mt-3">⏳ Start: {{ contest.start_time.strftime('%Y-%m-%d %H:%M:%S') }}</p>
-                <p class="text-sm text-gray-500">🏁 End: {{ contest.end_time.strftime('%Y-%m-%d %H:%M:%S') }}</p>
+        <div class="flex flex-col gap-8 w-full md:flex-row">
+            <!-- Contest Details (left side) -->
+            <div class="w-full md:w-2/3">
+                <div class="flex flex-col gap-8 w-full">
+                    <!-- Contest Description -->
+                    <div class="bg-gray-900 p-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300">
+                        <p class="text-gray-300 font-medium text-lg">📝 {{ contest.description }}</p>
+                        <p class="text-sm text-gray-500 mt-3">⏳ Start: {{ contest.start_time.strftime('%Y-%m-%d %H:%M:%S') }}</p>
+                        <p class="text-sm text-gray-500">🏁 End: {{ contest.end_time.strftime('%Y-%m-%d %H:%M:%S') }}</p>
+                    </div>
+
+                    <!-- Participation Options -->
+                    <div class="bg-gray-900 p-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300">
+                        <h2 class="text-2xl font-bold text-blue-400 mb-4">🚀 Problems</h2>
+                        <ul class="list-disc list-inside text-gray-300">
+                            {% if problems %}
+                                {% for problem in problems %}
+                                    <li class=" flex justify-between :text-blue-300 transition-all duration-200">
+                                        <a href="{{ url_for('problem', id=problem.id) }}" class="text-blue-400">{{ problem.title }}</a>
+                                        <p class="text-sm text-gray-500">🛠️ Solved: {{ solvers_count.get(problem.id, 0) }} times</p>
+                                    </li>
+                                {% endfor %}
+                            {% else %}
+                                <p class="text-gray-500">No problems available for this contest.</p>
+                            {% endif %}
+                        </ul>
+                    </div>
+                </div>
             </div>
 
-            <!-- Participation Options -->
-            <div class="bg-gray-900 p-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300">
-                <h2 class="text-2xl font-bold text-blue-400 mb-4">🚀 Problems</h2>
-                <ul class="list-disc list-inside text-gray-300">
-                    {% if problems %}
-                        {% for problem in problems %}
-                            <li class=" flex justify-between :text-blue-300 transition-all duration-200">
-                                <a href="{{ url_for('problem', id=problem.id) }}" class="text-blue-400">{{ problem.title }}</a>
-                                <p class="text-sm text-gray-500">🛠️ Solved: {{ solvers_count.get(problem.id, 0) }} times</p>
-                            </li>
-                        {% endfor %}
-                    {% else %}
-                        <p class="text-gray-500">No problems available for this contest.</p>
-                    {% endif %}
-                </ul>
+            <!-- Leaderboard (right side) -->
+            <div class="w-full md:w-1/3 mt-8 md:mt-0">
+                <div class="bg-gray-900 p-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300">
+                    <h2 class="text-2xl font-bold text-blue-400 mb-4">🏆 Leaderboard</h2>
+                    <ul class="list-disc list-inside text-gray-300">
+                        {% if standings %}
+                            {% for standing in standings %}
+                                <li class="flex justify-between">
+                                    <span>{{ standing.username }}</span>
+                                    <span>{{ standing.solved }} solved</span>
+                                </li>
+                            {% endfor %}
+                        {% else %}
+                            <p class="text-gray-500">No participants yet.</p>
+                        {% endif %}
+                    </ul>
+                </div>
             </div>
         </div>
     </div>

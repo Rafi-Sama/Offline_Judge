@@ -219,8 +219,18 @@ def delete_contest(contest_id):
 @app.route('/contest/<int:contest_id>')
 def contest_detail(contest_id):
     contest = Contest.query.get_or_404(contest_id)
-    solvers = dict(db.session.query(Submission.problem_id, func.count(func.distinct(Submission.user_id))).join(User).filter(User.role == 'participant', Submission.status == 'Accepted').group_by(Submission.problem_id).all())
-    return render_template('contest_detail.html', contest=contest, problems=contest.problems, solvers_count=solvers)
+    
+    solvers = dict(db.session.query(Submission.problem_id, func.count(func.distinct(Submission.user_id)))
+                   .join(User)
+                   .filter(User.role == 'participant', Submission.status == 'Accepted')
+                   .group_by(Submission.problem_id)
+                   .all())
+
+    standings = [{'username': participant.username, 'solved': sum(1 for problem in contest.problems if 
+                             Submission.query.filter_by(user_id=participant.id, problem_id=problem.id, status='Accepted').count() > 0)}
+                 for participant in User.query.filter_by(role='participant').all()]
+    
+    return render_template('contest_detail.html', contest=contest, problems=contest.problems, solvers_count=solvers, standings=sorted(standings, key=lambda x: x['solved'], reverse=True))
 
 @app.route('/edit_problem/<int:problem_id>', methods=['GET', 'POST'])
 def edit_problem(problem_id):
