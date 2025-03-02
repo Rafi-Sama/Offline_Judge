@@ -8,17 +8,34 @@
         {% if contests %}
             <ul class="space-y-6">
                 {% for contest in contests %}
-                <li class="p-5 rounded-lg bg-gray-900 text-white shadow-md border border-gray-700 flex justify-between items-center transition duration-300 hover:shadow-lg hover:border-gray-600">
-                    <div>
+                <li class="p-4 rounded-lg bg-gray-900 text-white shadow-md border border-gray-700 flex justify-between items-center transition duration-300 hover:shadow-lg hover:border-gray-600">
+                    <div class="w-full">
                         <h2 class="text-xl font-semibold text-blue-400">{{ contest.name }}</h2>
-                        <p class="text-sm text-gray-400 mt-1"><span class="font-medium">📅 Start:</span> {{ contest.start_time }}</p>
-                        <p class="text-sm text-gray-400"><span class="font-medium">⏳ End:</span> {{ contest.end_time }}</p>
+                        <p class="text-sm text-gray-400 mt-2">Edit the contest timings below:</p>
+
+                        <form method="POST" action="{{ url_for('manage_contests') }}" class="mt-4 flex items-center space-x-4">
+                            <input type="hidden" name="contest_id" value="{{ contest.id }}">
+
+                            <!-- Start Time -->
+                            <div class="flex flex-col space-y-1">
+                                <label for="start_time" class="text-gray-400 font-medium text-sm">📅 Start</label>
+                                <input type="datetime-local" id="start_time" name="start_time" value="{{ contest.start_time.strftime('%Y-%m-%dT%H:%M') }}" class="text-sm text-gray-400 p-2 rounded-lg border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 w-[120px]" />
+                            </div>
+
+                            <!-- End Time -->
+                            <div class="flex flex-col space-y-1">
+                                <label for="end_time" class="text-gray-400 font-medium text-sm">⏳ End</label>
+                                <input type="datetime-local" id="end_time" name="end_time" value="{{ contest.end_time.strftime('%Y-%m-%dT%H:%M') }}" class="text-sm text-gray-400 p-2 rounded-lg border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 w-[120px]" />
+                            </div>
+
+                            <!-- Save Button -->
+                            <button type="submit" class="btn btn-primary py-2 px-4 bg-cyan-600 hover:bg-cyan-700 text-white font-bold rounded-lg transition duration-300 shadow-md">
+                                Save
+                            </button>
+                        </form>
                     </div>
-                    <div class="flex space-x-4">
-                        <!-- Add Problem Button -->
-                        <a href="{{ url_for('add_problem', contest_id=contest.id) }}" class="text-cyan-400 hover:text-cyan-300 flex items-center space-x-2 py-2 px-4 rounded-md transition duration-300 hover:bg-cyan-600">
-                            <span>📝</span><span>Add Problem</span>
-                        </a>
+
+                    <div class="flex space-x-4 mt-6">
                         <!-- Manage Problems Button -->
                         <a href="{{ url_for('manage_problems', contest_id=contest.id) }}" class="text-yellow-400 hover:text-yellow-300 flex items-center space-x-2 py-2 px-4 rounded-md transition duration-300 hover:bg-yellow-600">
                             <span>⚙️</span><span>Manage Problems</span>
@@ -34,7 +51,7 @@
                 {% endfor %}
             </ul>
         {% else %}
-            <p class="text-gray-400 text-center text-lg">🚀 No contests available. <a href="{{ url_for('create_contest') }}" class="text-cyan-400 hover:text-cyan-300">Create one now!</a></p>
+            <p class="text-gray-400 text-center text-lg">🚀 No contests available. <a href="{{ url_for('add_contest') }}" class="text-cyan-400 hover:text-cyan-300">Create one now!</a></p>
         {% endif %}
     </div>
 </div>

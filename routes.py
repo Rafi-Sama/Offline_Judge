@@ -178,10 +178,35 @@ def add_contest():
         except ValueError: flash("Invalid date format", "error")
     return render_template('admin/add_contest.html')
 
-@app.route('/admin/manage_contests')
+@app.route('/admin/manage_contests', methods=['GET', 'POST'])
 @login_required
 @admin_required
-def manage_contests(): return render_template('admin/manage_contests.html', contests=Contest.query.all())
+def manage_contests():
+    if request.method == 'POST':
+        contest_id = request.form.get('contest_id')  # Get the contest ID from the form
+        contest = Contest.query.get(contest_id)  # Get the contest object from the database
+        if contest:
+            try:
+                start = datetime.strptime(request.form['start_time'], '%Y-%m-%dT%H:%M')  # Convert start time
+                end = datetime.strptime(request.form['end_time'], '%Y-%m-%dT%H:%M')  # Convert end time
+                now = datetime.now()  # Get current time
+                if start <= now or end <= start:  # Validate times
+                    flash("Invalid contest timing", "error")
+                else:
+                    contest.start_time = start  # Update start time
+                    contest.end_time = end  # Update end time
+                    db.session.commit()  # Commit changes to the database
+                    flash("Contest updated successfully!", "success")
+            except ValueError:
+                flash("Invalid date format", "error")
+        else:
+            flash("Contest not found", "error")
+        return redirect(url_for('manage_contests'))
+    
+    contests = Contest.query.all()  # Fetch all contests for display
+    return render_template('admin/manage_contests.html', contests=contests)
+
+
 
 @app.route('/admin/delete_contest/<int:contest_id>', methods=['POST'])
 @login_required
