@@ -4,6 +4,63 @@ from app import db  # database access
 from models import Problem, User, Submission,TestCase  # model definitions
 from extensions import socketio  # real-time communication
 
+def run_code(problem_id, code, language, user_id):
+    problem = Problem.query.get(problem_id)
+    sample_cases = TestCase.query.filter_by(problem_id=problem_id, is_sample=True).all()
+
+    if not sample_cases:
+        return {'status': 'No Sample Cases', 'results': []}
+
+    lang_ext = {'python': 'py', 'cpp': 'cpp', 'c': 'c'}
+    lang_compiler = {'python': 'python', 'cpp': 'g++', 'c': 'gcc'}
+
+    if language not in lang_ext:
+        return {'status': 'Unsupported Language', 'results': []}
+
+    user_dir = f"data/temp/user_{user_id}"
+    os.makedirs(user_dir, exist_ok=True)
+
+    code_file = os.path.join(user_dir, f"temp.{lang_ext[language]}")
+    with open(code_file, 'w') as f:
+        f.write(code)
+
+    if language in ['c', 'cpp']:
+        executable = os.path.join(user_dir, "temp.out")
+        compile_result = subprocess.run(
+            [lang_compiler[language], code_file, "-o", executable],
+            capture_output=True, text=True
+        )
+
+        if compile_result.returncode != 0:
+            return {'status': 'Compilation Error', 'error': compile_result.stderr, 'results': []}
+
+        exec_cmd = [executable]
+    else:
+        exec_cmd = ['python', code_file]
+
+    results = []
+    for test in sample_cases:
+        try:
+            result = subprocess.run(
+                exec_cmd, input=test.input_data, text=True, capture_output=True, timeout=problem.time_limit
+            )
+            output = result.stdout.strip()
+            expected_output = test.output_data.strip()
+
+            status = 'Passed' if output == expected_output else 'Failed'
+            results.append({'input': test.input_data, 'expected': expected_output, 'output': output, 'status': status})
+
+            if result.returncode != 0:
+                return {'status': 'Runtime Error', 'error': result.stderr, 'results': results}
+
+        except subprocess.TimeoutExpired:
+            return {'status': 'Time Limit Exceeded', 'results': results}
+        except Exception as e:
+            return {'status': f'Error: {str(e)}', 'results': results}
+
+    return {'status': 'All Passed', 'results': results}
+
+
 def judge_submission(submission):
     from app import socketio  # prevent circular import
     problem = Problem.query.get(submission.problem_id)
@@ -96,3 +153,4 @@ def calculate_standings():
         solved = Submission.query.filter_by(user_id=user.id, status='Accepted').count()  # count accepted submissions
         standings.append({'username': user.username, 'solved': solved})  # append user standings
     return sorted(standings, key=lambda x: x['solved'], reverse=True)  # sort standings descending
+

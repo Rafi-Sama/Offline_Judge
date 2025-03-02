@@ -4,7 +4,7 @@ from flask_login import login_user, logout_user, login_required, current_user  #
 from app import app, db  # application instance and database
 from models import User, Problem, Submission, Contest, ContestParticipant, TestCase  # model definitions
 from werkzeug.security import generate_password_hash, check_password_hash  # password security utilities
-from judging import judge_submission, calculate_standings  # judging and standings functions
+from judging import judge_submission, calculate_standings,run_code  # judging and standings functions
 from app import login_manager  # login manager instance
 from datetime import datetime  # datetime utilities
 from flask import jsonify  # JSON responses
@@ -125,7 +125,7 @@ def problem(id):
     return render_template('problem.html', problem=problem, description=description, sample_test_cases=sample_test_cases)  # render problem detail page
     
 
-@app.route('/submit/<int:problem_id>', methods=['GET', 'POST'])
+@app.route('/problem/<int:problem_id>', methods=['GET', 'POST'])
 @login_required
 def submit(problem_id):
     problem = Problem.query.get_or_404(problem_id)  # fetch problem or 404
@@ -139,7 +139,7 @@ def submit(problem_id):
         db.session.refresh(submission)  # refresh submission status
         flash(f'Submission #{submission.id} judged: {submission.status}', 'success')  # flash result message
         return redirect(url_for('problems'))  # redirect to problems page
-    return render_template('submit.html', problem=problem)  # render submission form
+    return render_template('problem.html', problem=problem)  # render submission form
 
 @app.route('/submissions')
 @login_required
@@ -150,6 +150,17 @@ def submission_history():
     else:
         submissions = Submission.query.order_by(Submission.timestamp.desc()).all()  # fetch all submissions
     return render_template('submission_history.html', submissions=submissions, show_only_mine=show_only_mine)  # render submission history
+
+@app.route('/problem/<int:problem_id>/run', methods=['POST'])
+@login_required
+def run(problem_id):
+    code = request.form['code']
+    language = request.form.get('language', 'cpp')
+
+    result = run_code(problem_id, code, language, current_user.id)
+    return jsonify(result)
+
+
 
 @app.route('/leaderboard')
 def leaderboard():
