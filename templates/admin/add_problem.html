@@ -45,7 +45,9 @@
                     <option value="Extreme">⚫ Extreme</option>
                 </select>
             </div>
-
+            {% if contest_id %}
+    <p class="text-gray-400 text-center mb-4">Adding problem to Contest ID: {{ contest_id }}</p>
+{% endif %}
             <!-- Problem Tags -->
             <div>
                 <label class="block text-gray-300 font-semibold">Tags</label>

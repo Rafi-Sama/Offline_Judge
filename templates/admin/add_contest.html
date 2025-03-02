@@ -1,66 +1,27 @@
 {% extends "base.html" %}
-
 {% block content %}
 <div class="flex justify-center items-center min-h-screen bg-gray-950">
     <div class="p-6 rounded-lg w-full max-w-md shadow-md text-center bg-gray-900">
         <h1 class="text-2xl font-bold text-gray-100 mb-4">➕ Add New Contest</h1>
-
         <form method="POST" class="space-y-4">
-            <input type="text" name="name" placeholder="Contest Name" required
-                class="input-field" autocomplete="off">
-
+            <input type="text" name="name" placeholder="Contest Name" required class="input-field" autocomplete="off">
             <div>
                 <label class="label">📅 Start Time:</label>
                 <input type="datetime-local" name="start_time" required class="input-field">
             </div>
-
             <div>
                 <label class="label">⏳ End Time:</label>
                 <input type="datetime-local" name="end_time" required class="input-field">
             </div>
-
             <button type="submit" class="submit-btn">✅ Add Contest</button>
         </form>
     </div>
 </div>
-
 <style>
-    .input-field {
-        width: 100%;
-        padding: 12px;
-        border-radius: 8px;
-        border: 1px solid #444;
-        background: #1a1a1a;
-        color: #ddd;
-        outline: none;
-        transition: 0.2s;
-    }
-
-    .input-field:focus {
-        border-color: #06b6d4;
-        background: #222;
-    }
-
-    .label {
-        display: block;
-        text-align: left;
-        font-weight: bold;
-        color: #bbb;
-        margin-bottom: 4px;
-    }
-
-    .submit-btn {
-        width: 100%;
-        padding: 12px;
-        background: #06b6d4;
-        color: white;
-        font-weight: bold;
-        border-radius: 8px;
-        transition: 0.2s;
-    }
-
-    .submit-btn:hover {
-        background: #0891b2;
-    }
+    .input-field { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #444; background: #1a1a1a; color: #ddd; outline: none; transition: 0.2s; }
+    .input-field:focus { border-color: #06b6d4; background: #222; }
+    .label { display: block; text-align: left; font-weight: bold; color: #bbb; margin-bottom: 4px; }
+    .submit-btn { width: 100%; padding: 12px; background: #06b6d4; color: white; font-weight: bold; border-radius: 8px; transition: 0.2s; }
+    .submit-btn:hover { background: #0891b2; }
 </style>
 {% endblock %}

@@ -17,13 +17,36 @@
                     <h2 class="text-2xl font-bold text-cyan-400 mb-4">{{ title }}</h2>
                     {% if contests %}
                         {% for contest in contests %}
-                            <a href="{{ url_for('contest_detail', contest_id=contest.id) }}" 
-                               class="bg-gray-900 p-5 mb-4 rounded-lg hover:bg-gray-800 transition w-full flex flex-col shadow-md border border-gray-700 hover:border-cyan-400">
+                        <div class="bg-gray-900 p-5 mb-4 rounded-lg hover:bg-gray-800 transition w-full flex justify-between items-center shadow-md border border-gray-700 hover:border-cyan-400 contest-item">
+                            <div>
                                 <p class="text-xl font-semibold text-gray-200">{{ contest.name }}</p>
                                 <p class="text-sm text-gray-400 flex items-center gap-2 mt-1">
                                     🕒 <span>{{ label }}: {{ contest[time_attr].strftime('%Y-%m-%d %H:%M:%S') }}</span>
                                 </p>
-                            </a>
+                                {% if contest in upcoming_contests %}
+                                    <p class="text-sm text-yellow-400 countdown" data-start="{{ contest.start_time.timestamp() }}"></p>
+                                {% endif %}
+                            </div>
+                        
+                            <div>
+                                {% if current_user.is_authenticated %}
+                                    {% if contest.id in user_participations %}
+                                        {% if contest in upcoming_contests %}
+                                            <p class="text-green-400 font-semibold">Registered</p>
+                                        {% elif contest in ongoing_contests %}
+                                            <a href="{{ url_for('contest_detail', contest_id=contest.id) }}" 
+                                               class="bg-green-500 px-4 py-2 rounded-lg font-semibold hover:bg-green-600 enter-button">Enter</a>
+                                        {% endif %}
+                                    {% else %}
+                                        <form method="POST" action="{{ url_for('join_contest', contest_id=contest.id) }}">
+                                            <button type="submit" class="bg-blue-500 px-4 py-2 rounded-lg font-semibold hover:bg-blue-600">Join</button>
+                                        </form>
+                                    {% endif %}
+                                {% else %}
+                                    <a href="{{ url_for('login') }}" class="bg-red-500 px-4 py-2 rounded-lg font-semibold hover:bg-red-600">Login to Join</a>
+                                {% endif %}
+                            </div>
+                        </div>                                     
                         {% endfor %}
                     {% else %}
                         <p class="text-gray-400 italic">No contests available.</p>
@@ -33,4 +56,40 @@
         </div>
     </div>
 </div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        document.querySelectorAll(".countdown").forEach(el => {
+            let startTime = parseInt(el.dataset.start) * 1000;
+            let contestItem = el.closest(".contest-item");
+            let enterButton = contestItem?.querySelector(".enter-button");
+    
+            function updateCountdown() {
+                let now = new Date().getTime();
+                let timeLeft = startTime - now;
+    
+                if (timeLeft > 0) {
+                    let hours = Math.floor(timeLeft / (1000 * 60 * 60));
+                    let minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+                    let seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
+                    el.innerText = `Starts in: ${hours}h ${minutes}m ${seconds}s`;
+                } else {
+                    el.innerText = "Contest Started!";
+                    clearInterval(interval);
+    
+                    // Redirect only if the user is already registered and there is a valid enter button
+                    if (enterButton) {
+                        setTimeout(() => {
+                            window.location.href = enterButton.href;
+                        }, 1000); // Redirect after 1 second
+                    }
+                }
+            }
+    
+            let interval = setInterval(updateCountdown, 1000);
+            updateCountdown();
+        });
+    });
+    </script>
+    
 {% endblock %}
