@@ -1,11 +1,13 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="text-center mt-16">
-    <h1 class="text-6xl font-extrabold neon-text">Welcome to Offline Judge</h1>
-    <p class="mt-4 text-lg text-gray-300">Push your limits in a hyper-intelligent coding arena.</p>
+<div class="flex flex-col items-center justify-center min-h-screen px-4">
+    <!-- Heading Section -->
+    <h1 class="text-6xl font-extrabold neon-text text-center">Welcome to Offline Judge</h1>
+    <p class="mt-4 text-lg text-gray-300 text-center">Push your limits in a hyper-intelligent coding arena.</p>
 
-    <div class="mt-8 space-x-4">
+    <!-- Action Buttons -->
+    <div class="mt-8 flex flex-wrap justify-center gap-4">
         {% if not current_user.is_authenticated %}
             <a href="{{ url_for('login') }}" class="neon-button">Login</a>
             <a href="{{ url_for('register') }}" class="neon-button bg-pink-500 hover:bg-pink-600">Register</a>
@@ -15,13 +17,14 @@
         {% endif %}
     </div>
 
-    <div class="mt-16 mx-auto w-3/4 glass p-8 glow-border">
-        <h2 class="text-3xl font-semibold text-center text-white">🚀 Why Choose Offline Judge?</h2>
-        <ul class="mt-4 text-gray-300 list-disc list-inside">
-            <li>⚡ **Ultra-Fast Execution Engine**</li>
-            <li>🧠 **AI-Powered Code Analysis**</li>
-            <li>🌎 **Global Leaderboards & Rankings**</li>
-            <li>🔒 **Secure & Private Environment**</li>
+    <!-- Features Section -->
+    <div class="mt-16 max-w-3xl w-full glass p-8 glow-border shadow-lg">
+        <h2 class="text-3xl font-semibold text-white text-center mb-4">🚀 Why Choose Offline Judge?</h2>
+        <ul class="text-gray-300 space-y-2">
+            <li class="flex items-center gap-2"><span class="text-blue-400">⚡</span> <span>Ultra-Fast Execution Engine</span></li>
+            <li class="flex items-center gap-2"><span class="text-green-400">🧠</span> <span>AI-Powered Code Analysis</span></li>
+            <li class="flex items-center gap-2"><span class="text-yellow-400">🌎</span> <span>Global Leaderboards & Rankings</span></li>
+            <li class="flex items-center gap-2"><span class="text-red-400">🔒</span> <span>Secure & Private Environment</span></li>
         </ul>
     </div>
 </div>

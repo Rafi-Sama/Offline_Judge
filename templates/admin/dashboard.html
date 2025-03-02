@@ -1,39 +1,63 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="flex justify-center items-center min-h-screen">
-    <div class="glass p-8 rounded-lg w-full max-w-xl shadow-lg text-center">
-        <h1 class="text-3xl font-bold neon-text mb-6">Admin Dashboard</h1>
+<div class="flex justify-center items-center min-h-screen bg-gray-950">
+    <div class="glass p-10 rounded-2xl w-full max-w-2xl shadow-2xl text-center">
+        <h1 class="text-4xl font-extrabold text-cyan-400 mb-8 neon-text">
+            Admin Dashboard
+        </h1>
 
-        <a href="{{ url_for('add_contest') }}"
-            class="block w-full p-4 rounded-lg bg-green-500 hover:bg-green-600 text-white font-bold transition duration-300 neon-hover">
-            Add New Contest
-        </a>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <a href="{{ url_for('add_contest') }}"
+                class="dashboard-btn bg-green-500 hover:bg-green-600">
+                ➕ Add New Contest
+            </a>
 
-        <a href="{{ url_for('manage_contests') }}"
-            class="block w-full mt-4 p-4 rounded-lg bg-red-500 hover:bg-red-600 text-white font-bold transition duration-300 neon-hover">
-            Manage Contests
-        </a>
+            <a href="{{ url_for('manage_contests') }}"
+                class="dashboard-btn bg-red-500 hover:bg-red-600">
+                🛠 Manage Contests
+            </a>
 
-        <a href="{{ url_for('add_problem') }}"
-            class="block w-full mt-4 p-4 rounded-lg bg-pink-500 hover:bg-pink-600 text-white font-bold transition duration-300 neon-hover">
-            Add New Problem
-        </a>
+            <a href="{{ url_for('add_problem') }}"
+                class="dashboard-btn bg-pink-500 hover:bg-pink-600">
+                ✏️ Add New Problem
+            </a>
 
-        <a href="{{ url_for('manage_problems') }}"
-            class="block w-full mt-4 p-4 rounded-lg bg-purple-500 hover:bg-purple-600 text-white font-bold transition duration-300 neon-hover">
-            Manage Problems
-        </a>
+            <a href="{{ url_for('manage_problems') }}"
+                class="dashboard-btn bg-purple-500 hover:bg-purple-600">
+                📋 Manage Problems
+            </a>
 
-        <a href="{{ url_for('manage_users') }}"
-            class="block w-full mt-4 p-4 rounded-lg bg-blue-500 hover:bg-blue-600 text-white font-bold transition duration-300 neon-hover">
-            Manage Users
-        </a>
+            <a href="{{ url_for('manage_users') }}"
+                class="dashboard-btn bg-blue-500 hover:bg-blue-600">
+                👥 Manage Users
+            </a>
 
-        <a href="{{ url_for('manage_submissions') }}"
-            class="block w-full mt-4 p-4 rounded-lg bg-yellow-500 hover:bg-yellow-600 text-white font-bold transition duration-300 neon-hover">
-            Manage Submissions
-        </a>
+            <a href="{{ url_for('manage_submissions') }}"
+                class="dashboard-btn bg-yellow-500 hover:bg-yellow-600">
+                📂 Manage Submissions
+            </a>
+        </div>
     </div>
 </div>
+
+<style>
+    .dashboard-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 16px;
+        border-radius: 12px;
+        font-weight: bold;
+        color: white;
+        text-decoration: none;
+        font-size: 1.2rem;
+        transition: transform 0.2s ease-in-out, background 0.3s;
+    }
+
+    .dashboard-btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0px 4px 10px rgba(255, 255, 255, 0.2);
+    }
+</style>
 {% endblock %}

@@ -2,21 +2,21 @@
 
 {% block content %}
 <div class="text-center mt-16">
-    <h1 class="text-4xl font-extrabold neon-text">Submission History</h1>
+    <h1 class="text-4xl font-extrabold neon-text">📜 Submission History</h1>
 
     <!-- Toggle Switch -->
     <div class="mt-6 flex justify-center items-center">
+        <span class="mr-3 text-cyan-300 neon-hover text-lg">Show Only My Submissions</span>
         <label class="relative inline-flex items-center cursor-pointer">
             <input type="checkbox" id="mineOnly" class="sr-only peer" onchange="toggleSubmissions()" {% if show_only_mine %}checked{% endif %}>
-            <div class="w-12 h-6 bg-gray-700 peer-focus:ring-2 peer-focus:ring-cyan-400 rounded-full peer peer-checked:after:translate-x-6 after:content-[''] after:absolute after:left-1 after:top-1 after:bg-cyan-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-cyan-500"></div>
-            <span class="ml-3 text-cyan-300 neon-hover text-lg">Show Only My Submissions</span>
+            <div class="w-14 h-7 bg-gray-700 peer-focus:ring-2 peer-focus:ring-cyan-400 rounded-full peer peer-checked:after:translate-x-7 after:content-[''] after:absolute after:left-1 after:top-1 after:bg-cyan-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-cyan-500"></div>
         </label>
     </div>
 
     <!-- Submission Table -->
     <div class="mt-8 mx-auto w-11/12 lg:w-3/4 glass p-6 glow-border overflow-x-auto rounded-lg shadow-lg">
         <table class="w-full text-gray-300 border-collapse">
-            <thead class="text-cyan-400 border-b-2 border-cyan-500">
+            <thead class="text-cyan-400 border-b-2 border-cyan-500 sticky top-0 bg-gray-900">
                 <tr class="text-lg">
                     <th class="py-3">ID</th>
                     <th class="py-3">User</th>
@@ -40,7 +40,7 @@
                     </td>
                     <td class="py-3 px-4 text-center">{{ sub.language }}</td>
                     <td class="py-3 px-4 text-center">
-                        <span class="px-2 py-1 text-sm rounded-md {% if sub.status == 'Accepted' %}bg-green-600 text-green-200{% else %}bg-red-600 text-red-200{% endif %}">
+                        <span class="px-2 py-1 text-sm rounded-md {% if sub.status == 'Accepted' %}bg-green-600 text-green-200{% else %}bg-red-600 text-red-200{% endif %} shadow-md">
                             {{ sub.status }}
                         </span>
                     </td>
@@ -56,13 +56,16 @@
     </div>
 </div>
 
-<!-- Modal -->
+<!-- Code Modal -->
 <div id="codeModal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-60 hidden">
     <div class="bg-gray-900 text-gray-300 p-6 rounded-lg w-11/12 md:w-3/5 lg:w-2/5 relative shadow-xl">
         <button onclick="closeModal()" class="absolute top-2 right-3 text-gray-400 hover:text-white text-xl">✖</button>
         <h2 id="modalTitle" class="text-lg font-semibold text-cyan-400 mb-3"></h2>
-        <pre id="modalCode" class="bg-gray-800 p-3 rounded-md text-sm overflow-auto max-h-80"></pre>
-        <button onclick="copyCode()" class="mt-3 px-4 py-1 bg-cyan-500 hover:bg-cyan-600 text-white rounded-md">Copy</button>
+        <pre id="modalCode" class="bg-gray-800 p-3 rounded-md text-sm overflow-auto max-h-80 border border-cyan-500"></pre>
+        <button onclick="copyCode()" class="mt-3 px-4 py-1 bg-cyan-500 hover:bg-cyan-600 text-white rounded-md">
+            📋 Copy
+        </button>
+        <span id="copyConfirmation" class="ml-2 text-green-400 text-sm hidden">Copied!</span>
     </div>
 </div>
 
@@ -87,7 +90,9 @@
     function copyCode() {
         let codeText = document.getElementById("modalCode").textContent;
         navigator.clipboard.writeText(codeText).then(() => {
-            alert("Code copied!");
+            let confirmation = document.getElementById("copyConfirmation");
+            confirmation.classList.remove("hidden");
+            setTimeout(() => confirmation.classList.add("hidden"), 1500);
         });
     }
 </script>
