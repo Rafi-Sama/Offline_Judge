@@ -1,56 +1,33 @@
-{% extends "base.html" %}
-
-{% block content %}
-<div class="flex justify-center items-center min-h-screen py-8 bg-gray-950">
+{% extends "base.html" %} {% block content %}
+<div class="flex justify-center items-center min-h-[calc(100vh-250px)] py-8 ">
     <div class="glass p-8 rounded-lg w-full max-w-3xl shadow-lg border border-gray-700">
         <h1 class="text-3xl font-bold neon-text text-center mb-6">🚀 Add a New Problem</h1>
-
         <form method="POST">
-            <!-- Problem Title -->
-            <div>
-                <label class="block text-gray-300 font-semibold">Title</label>
-                <input type="text" name="title" required
-                    class="w-full p-3 rounded-lg bg-gray-900 text-gray-300 border border-gray-700 focus:ring-2 focus:ring-blue-500 transition">
+            <div><label class="block text-gray-300 font-semibold">Title</label>
+                <input type="text" name="title" required class="w-full p-3 rounded-lg bg-gray-900 text-gray-300 border border-gray-700 focus:ring-2 focus:ring-blue-500 transition">
             </div>
-
-            <!-- Time & Memory Limits -->
             <div class="grid grid-cols-2 gap-4">
-                <div>
-                    <label class="block text-gray-300 font-semibold">Time Limit (s)</label>
-                    <input type="number" step="0.1" name="time_limit" value="1.0" required
-                        class="w-full p-3 rounded-lg bg-gray-900 text-gray-300 border border-gray-700 focus:ring-2 focus:ring-blue-500 transition">
+                <div><label class="block text-gray-300 font-semibold">Time Limit (s)</label>
+                    <input type="number" step="0.1" name="time_limit" value="1.0" required class="w-full p-3 rounded-lg bg-gray-900 text-gray-300 border border-gray-700 focus:ring-2 focus:ring-blue-500 transition">
                 </div>
-                <div>
-                    <label class="block text-gray-300 font-semibold">Memory Limit (MB)</label>
-                    <input type="number" name="memory_limit" value="256" required
-                        class="w-full p-3 rounded-lg bg-gray-900 text-gray-300 border border-gray-700 focus:ring-2 focus:ring-blue-500 transition">
+                <div><label class="block text-gray-300 font-semibold">Memory Limit (MB)</label>
+                    <input type="number" name="memory_limit" value="256" required class="w-full p-3 rounded-lg bg-gray-900 text-gray-300 border border-gray-700 focus:ring-2 focus:ring-blue-500 transition">
                 </div>
             </div>
-
-            <!-- Problem Description -->
-            <div>
-                <label class="block text-gray-300 font-semibold">Description</label>
-                <textarea name="description" rows="5" required
-                    class="w-full p-3 rounded-lg bg-gray-900 text-gray-300 border border-gray-700 focus:ring-2 focus:ring-blue-500 transition"></textarea>
+            <div><label class="block text-gray-300 font-semibold">Description</label>
+                <textarea name="description" rows="5" required class="w-full p-3 rounded-lg bg-gray-900 text-gray-300 border border-gray-700 focus:ring-2 focus:ring-blue-500 transition"></textarea>
             </div>
-
-                        <!-- Difficulty Level -->
-            <div>
-                <label class="block text-gray-300 font-semibold">Difficulty Level</label>
-                <select name="difficulty" required
-                    class="w-full p-3 rounded-lg bg-gray-900 text-gray-300 border border-gray-700 focus:ring-2 focus:ring-blue-500 transition">
+            <div><label class="block text-gray-300 font-semibold">Difficulty Level</label>
+                <select name="difficulty" required class="w-full p-3 rounded-lg bg-gray-900 text-gray-300 border border-gray-700 focus:ring-2 focus:ring-blue-500 transition">
                     <option value="Easy">🟢 Easy</option>
                     <option value="Medium">🟠 Medium</option>
                     <option value="Hard">🔴 Hard</option>
                     <option value="Extreme">⚫ Extreme</option>
                 </select>
             </div>
-
-            <!-- Problem Tags -->
-            <div>
-                <label class="block text-gray-300 font-semibold">Tags</label>
-                <select name="tags[]" required
-                    class="w-full p-3 rounded-lg bg-gray-900 text-gray-300 border border-gray-700 focus:ring-2 focus:ring-blue-500 transition">
+            {% if contest_id %}<p class="text-gray-400 text-center mb-4">Adding problem to Contest ID: {{ contest_id }}</p>{% endif %}
+            <div><label class="block text-gray-300 font-semibold">Tags</label>
+                <select name="tags[]" required class="w-full p-3 rounded-lg bg-gray-900 text-gray-300 border border-gray-700 focus:ring-2 focus:ring-blue-500 transition">
                     <option value="brute_force">💪 Brute Force</option>
                     <option value="math">📐 Math</option>
                     <option value="dp">📊 Dynamic Programming</option>
@@ -63,61 +40,35 @@
                 </select>
                 <small class="text-gray-400">Hold Ctrl (Cmd on Mac) to select multiple tags.</small>
             </div>
-
-
-            <!-- Test Cases Section -->
             <div id="test-cases-container">
                 <label class="block text-gray-300 font-semibold">Test Cases</label>
                 <div class="test-case">
                     <label class="text-gray-300">Test Input</label>
-                    <textarea name="input[]" rows="3"
-                        class="w-full p-3 rounded-lg bg-gray-900 text-gray-300 border border-gray-700 focus:ring-2 focus:ring-blue-500 transition"></textarea>
-            
+                    <textarea name="input[]" rows="3" class="w-full p-3 rounded-lg bg-gray-900 text-gray-300 border border-gray-700 focus:ring-2 focus:ring-blue-500 transition"></textarea>
                     <label class="text-gray-300">Expected Output</label>
-                    <textarea name="output[]" rows="3"
-                        class="w-full p-3 rounded-lg bg-gray-900 text-gray-300 border border-gray-700 focus:ring-2 focus:ring-blue-500 transition"></textarea>
-            
-                    <label class="text-gray-300 flex items-center">
-                        <input type="checkbox" name="sample[]" value="0" class="mr-2"> Mark as Sample Test Case
-                    </label>
+                    <textarea name="output[]" rows="3" class="w-full p-3 rounded-lg bg-gray-900 text-gray-300 border border-gray-700 focus:ring-2 focus:ring-blue-500 transition"></textarea>
+                    <label class="text-gray-300 flex items-center"><input type="checkbox" name="sample[]" value="0" class="mr-2"> Mark as Sample Test Case</label>
                 </div>
             </div>
-            
-            <button type="button" id="add-test-case"
-                class="mt-4 p-2 bg-green-500 hover:bg-green-600 text-white rounded font-bold">+ Add Another Test Case</button>
-            
-
-            <button type="submit"
-                class="w-full mt-6 p-3 rounded-lg bg-blue-500 hover:bg-blue-600 text-white font-bold transition duration-300">
-                ➕ Add Problem
-            </button>
+            <button type="button" id="add-test-case" class="mt-4 p-2 bg-green-500 hover:bg-green-600 text-white rounded font-bold">+ Add Another Test Case</button>
+            <button type="submit" class="w-full mt-6 p-3 rounded-lg bg-blue-500 hover:bg-blue-600 text-white font-bold transition duration-300">➕ Add Problem</button>
         </form>
     </div>
 </div>
-
 <script>
 document.getElementById('add-test-case').addEventListener('click', function () {
     let container = document.getElementById('test-cases-container');
-    let testCaseCount = container.getElementsByClassName('test-case').length; // Get current count
-
+    let testCaseCount = container.getElementsByClassName('test-case').length;
     let newTestCase = document.createElement('div');
     newTestCase.classList.add('test-case', 'mt-4');
     newTestCase.innerHTML = `
         <label class="text-gray-300">Test Input</label>
-        <textarea name="input[]" rows="3"
-            class="w-full p-3 rounded-lg bg-gray-900 text-gray-300 border border-gray-700 focus:ring-2 focus:ring-blue-500 transition"></textarea>
-
+        <textarea name="input[]" rows="3" class="w-full p-3 rounded-lg bg-gray-900 text-gray-300 border border-gray-700 focus:ring-2 focus:ring-blue-500 transition"></textarea>
         <label class="text-gray-300">Expected Output</label>
-        <textarea name="output[]" rows="3"
-            class="w-full p-3 rounded-lg bg-gray-900 text-gray-300 border border-gray-700 focus:ring-2 focus:ring-blue-500 transition"></textarea>
-
-        <label class="text-gray-300 flex items-center">
-            <input type="checkbox" name="sample[]" value="${testCaseCount}" class="mr-2"> Mark as Sample Test Case
-        </label>
+        <textarea name="output[]" rows="3" class="w-full p-3 rounded-lg bg-gray-900 text-gray-300 border border-gray-700 focus:ring-2 focus:ring-blue-500 transition"></textarea>
+        <label class="text-gray-300 flex items-center"><input type="checkbox" name="sample[]" value="${testCaseCount}" class="mr-2"> Mark as Sample Test Case</label>
     `;
-
     container.appendChild(newTestCase);
 });
-
 </script>
 {% endblock %}

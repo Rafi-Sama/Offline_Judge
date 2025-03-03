@@ -1,42 +1,20 @@
-{% extends "base.html" %}
-
-{% block content %}
-<div class="flex justify-center items-center min-h-screen bg-gray-950">
+{% extends "base.html" %} {% block content %}
+<div class="flex justify-center items-center min-h-[calc(100vh-250px)]">
     <div class="glass p-10 rounded-2xl w-full max-w-2xl shadow-2xl text-center">
-        <h1 class="text-4xl font-extrabold text-cyan-400 mb-8 neon-text">
-            Admin Dashboard
-        </h1>
-
+        <h1 class="text-4xl font-extrabold text-cyan-400 mb-8 neon-text">Admin Dashboard</h1>
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <a href="{{ url_for('add_contest') }}"
-                class="dashboard-btn bg-green-500 hover:bg-green-600">
-                ➕ Add New Contest
+            {% for url, color, text in [
+                ('add_contest', 'green', '➕ Add New Contest'),
+                ('manage_contests', 'red', '🛠 Manage Contests'),
+                ('add_problem', 'pink', '✏️ Add New Problem'),
+                ('manage_problems', 'purple', '📋 Manage Problems'),
+                ('manage_users', 'blue', '👥 Manage Users'),
+                ('manage_submissions', 'yellow', '📂 Manage Submissions')
+            ] %}
+            <a href="{{ url_for(url) }}" class="dashboard-btn bg-{{ color }}-500 hover:bg-{{ color }}-600">
+                {{ text }}
             </a>
-
-            <a href="{{ url_for('manage_contests') }}"
-                class="dashboard-btn bg-red-500 hover:bg-red-600">
-                🛠 Manage Contests
-            </a>
-
-            <a href="{{ url_for('add_problem') }}"
-                class="dashboard-btn bg-pink-500 hover:bg-pink-600">
-                ✏️ Add New Problem
-            </a>
-
-            <a href="{{ url_for('manage_problems') }}"
-                class="dashboard-btn bg-purple-500 hover:bg-purple-600">
-                📋 Manage Problems
-            </a>
-
-            <a href="{{ url_for('manage_users') }}"
-                class="dashboard-btn bg-blue-500 hover:bg-blue-600">
-                👥 Manage Users
-            </a>
-
-            <a href="{{ url_for('manage_submissions') }}"
-                class="dashboard-btn bg-yellow-500 hover:bg-yellow-600">
-                📂 Manage Submissions
-            </a>
+            {% endfor %}
         </div>
     </div>
 </div>

@@ -1,32 +1,21 @@
-{% extends "base.html" %}
-
-{% block content %}
-<div class="flex justify-center items-center min-h-screen">
+{% extends "base.html" %}  {% block content %}
+<div class="flex justify-center items-center min-h-[calc(100vh-250px)]">
     <div class="glass p-8 rounded-lg w-96 shadow-lg">
         <h1 class="text-3xl font-bold neon-text text-center">Login</h1>
-        
         <form method="POST" class="mt-6 space-y-4">
+            {% for field in ["Username", "Password"] %}
             <div>
-                <label class="block text-gray-300 mb-2">Username</label>
-                <input type="text" name="username" required
+                <label class="block text-gray-300 mb-2">{{ field }}</label>
+                <input type="{{ 'password' if field == 'Password' else 'text' }}" name="{{ field|lower }}" required
                     class="w-full p-3 bg-transparent border border-gray-400 rounded-lg focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400 outline-none transition duration-300">
             </div>
-
-            <div>
-                <label class="block text-gray-300 mb-2">Password</label>
-                <input type="password" name="password" required
-                    class="w-full p-3 bg-transparent border border-gray-400 rounded-lg focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400 outline-none transition duration-300">
-            </div>
-
-            <button type="submit"
-                class="neon-button w-full mt-4 transition-transform transform hover:scale-105">
+            {% endfor %}
+            <button type="submit" class="neon-button w-full mt-4 transition-transform transform hover:scale-105">
                 Login
             </button>
         </form>
-
         <p class="mt-4 text-center text-gray-400">
-            Don't have an account? 
-            <a href="{{ url_for('register') }}" class="neon-hover">Register</a>
+            Don't have an account? <a href="{{ url_for('register') }}" class="neon-hover">Register</a>
         </p>
     </div>
 </div>

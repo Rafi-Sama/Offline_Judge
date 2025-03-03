@@ -1,36 +1,80 @@
-{% extends "base.html" %}
-
-{% block content %}
-<div class="flex justify-center items-center min-h-screen overflow-x-hidden w-full bg-gray-950">
-    <div class="glass p-8 rounded-lg w-full max-w-4xl shadow-xl backdrop-blur-md glow-border">
+{% extends "base.html" %}  {% block content %}
+<div class="flex justify-center items-center min-h-[calc(100vh-250px)] w-full ">
+    <div class="glass p-8 rounded-lg max-w-4xl w-full shadow-xl backdrop-blur-md glow-border">
         <h1 class="text-4xl font-extrabold neon-text text-center mb-6">🏆 Contests</h1>
 
-        <div class="flex flex-col gap-6 w-full">
-            {% set contest_sections = [
-                ('🔥 Ongoing Contests', ongoing_contests, 'Ends', 'end_time'),
-                ('⏳ Upcoming Contests', upcoming_contests, 'Starts', 'start_time'),
-                ('📅 Past Contests', past_contests, 'Ended', 'end_time')
-            ] %}
+        {% set sections = [
+            ('🔥 Ongoing Contests', ongoing_contests, 'Ends', 'end_time'),
+            ('⏳ Upcoming Contests', upcoming_contests, 'Starts', 'start_time'),
+            ('📅 Past Contests', past_contests, 'Ended', 'end_time')
+        ] %}
 
-            {% for title, contests, label, time_attr in contest_sections %}
-                <div class="w-full">
-                    <h2 class="text-2xl font-bold text-cyan-400 mb-4">{{ title }}</h2>
-                    {% if contests %}
-                        {% for contest in contests %}
-                            <a href="{{ url_for('contest_detail', contest_id=contest.id) }}" 
-                               class="bg-gray-900 p-5 mb-4 rounded-lg hover:bg-gray-800 transition w-full flex flex-col shadow-md border border-gray-700 hover:border-cyan-400">
-                                <p class="text-xl font-semibold text-gray-200">{{ contest.name }}</p>
-                                <p class="text-sm text-gray-400 flex items-center gap-2 mt-1">
-                                    🕒 <span>{{ label }}: {{ contest[time_attr].strftime('%Y-%m-%d %H:%M:%S') }}</span>
-                                </p>
-                            </a>
-                        {% endfor %}
-                    {% else %}
-                        <p class="text-gray-400 italic">No contests available.</p>
-                    {% endif %}
-                </div>
+        <div class="space-y-6">
+            {% for title, contests, label, time_attr in sections %}
+            <div>
+                <h2 class="text-2xl font-bold text-cyan-400 mb-4">{{ title }}</h2>
+                {% if contests %}
+                    {% for contest in contests %}
+                    <div class="bg-gray-900 p-5 rounded-lg hover:bg-gray-800 transition flex justify-between items-center shadow-md border border-gray-700 hover:border-cyan-400 contest-item">
+                        <div>
+                            <p class="text-xl font-semibold text-gray-200">{{ contest.name }}</p>
+                            <p class="text-sm text-gray-400 mt-1">🕒 {{ label }}: {{ contest[time_attr].strftime('%Y-%m-%d %H:%M:%S') }}</p>
+                            {% if contest in upcoming_contests %}
+                                <p class="text-sm text-yellow-400 countdown" data-start="{{ contest.start_time.timestamp() }}"></p>
+                            {% endif %}
+                        </div>
+                        <div>
+                            {% if current_user.is_authenticated %}
+                                {% if contest.id in user_participations %}
+                                    {% if contest in upcoming_contests %}
+                                        <p class="text-green-400 font-semibold">Registered</p>
+                                    {% elif contest in ongoing_contests %}
+                                        <a href="{{ url_for('contest_detail', contest_id=contest.id) }}" class="bg-green-500 px-4 py-2 rounded-lg font-semibold hover:bg-green-600 enter-button">Enter</a>
+                                    {% endif %}
+                                {% else %}
+                                    <form method="POST" action="{{ url_for('join_contest', contest_id=contest.id) }}">
+                                        <button type="submit" class="bg-blue-500 px-4 py-2 rounded-lg font-semibold hover:bg-blue-600">Join</button>
+                                    </form>
+                                {% endif %}
+                            {% else %}
+                                <a href="{{ url_for('login') }}" class="bg-red-500 px-4 py-2 rounded-lg font-semibold hover:bg-red-600">Login to Join</a>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <p class="text-gray-400 italic">No contests available.</p>
+                {% endif %}
+            </div>
             {% endfor %}
         </div>
     </div>
 </div>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    document.querySelectorAll(".countdown").forEach(el => {
+        let startTime = el.dataset.start * 1000;
+        let contestItem = el.closest(".contest-item");
+        let enterButton = contestItem?.querySelector(".enter-button");
+
+        let updateCountdown = () => {
+            let timeLeft = startTime - Date.now();
+            if (timeLeft > 0) {
+                let h = Math.floor(timeLeft / 3600000),
+                    m = Math.floor((timeLeft % 3600000) / 60000),
+                    s = Math.floor((timeLeft % 60000) / 1000);
+                el.innerText = `Starts in: ${h}h ${m}m ${s}s`;
+            } else {
+                el.innerText = "Contest Started!";
+                clearInterval(interval);
+                if (enterButton) setTimeout(() => window.location.href = enterButton.href, 1000);
+            }
+        };
+
+        let interval = setInterval(updateCountdown, 1000);
+        updateCountdown();
+    });
+});
+</script>
 {% endblock %}

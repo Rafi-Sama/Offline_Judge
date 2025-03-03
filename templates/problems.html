@@ -1,57 +1,39 @@
-{% extends "base.html" %}
-
-{% block content %}
-<div class="flex flex-col items-center min-h-screen py-8 bg-gray-950">
+{% extends "base.html" %}  {% block content %}
+<div class="flex flex-col items-center min-h-[calc(100vh-250px)] py-8 ">
     <div class="glass p-6 rounded-lg w-full max-w-4xl shadow-lg border border-gray-700">
         <h1 class="text-4xl font-bold neon-text text-center mb-6">🚀 Problem Set</h1>
 
-        <!-- Search and Filter Section -->
         <form method="GET" class="flex flex-wrap items-center justify-between gap-4 bg-gray-800 p-4 rounded-lg mb-6">
             <input type="text" name="search" value="{{ search_query }}" placeholder="🔍 Search by title"
                 class="p-3 rounded-md bg-gray-900 text-white w-full md:w-auto flex-1 focus:ring-2 focus:ring-blue-400 transition">
         
-            <!-- Category Filter -->
-            <select name="category"
-                class="p-3 rounded-md bg-gray-900 text-white focus:ring-2 focus:ring-blue-400 transition">
+            <select name="category" class="p-3 rounded-md bg-gray-900 text-white focus:ring-2 focus:ring-blue-400 transition">
                 <option value="">📌 All Categories</option>
                 {% for category in categories %}
-                    <option value="{{ category }}" {% if category == category_filter %}selected{% endif %}>
-                        {{ category }}
-                    </option>
+                    <option value="{{ category }}" {% if category == category_filter %}selected{% endif %}>{{ category }}</option>
                 {% endfor %}
             </select>
         
-            <!-- Difficulty Filter -->
-            <select name="difficulty"
-                class="p-3 rounded-md bg-gray-900 text-white focus:ring-2 focus:ring-blue-400 transition">
+            <select name="difficulty" class="p-3 rounded-md bg-gray-900 text-white focus:ring-2 focus:ring-blue-400 transition">
                 <option value="">⚡ All Difficulties</option>
                 {% for diff in difficulties %}
-                    <option value="{{ diff }}" {% if diff == difficulty_filter %}selected{% endif %}>
-                        {{ diff }}
-                    </option>
+                    <option value="{{ diff }}" {% if diff == difficulty_filter %}selected{% endif %}>{{ diff }}</option>
                 {% endfor %}
             </select>
         
-            <!-- Tags Filter (Multi-Select) -->
-            <select name="tags"
-                class="p-3 rounded-md bg-gray-900 text-white focus:ring-2 focus:ring-blue-400 transition">
+            <select name="tags" class="p-3 rounded-md bg-gray-900 text-white focus:ring-2 focus:ring-blue-400 transition">
                 <option value="">⚡ All Tags</option>
                 {% for tag in tags %}
-                    <option value="{{ tag }}" {% if tag in selected_tags %}selected{% endif %}>
-                        {{ tag.replace('_', ' ').title() }}
-                    </option>
+                    <option value="{{ tag }}" {% if tag in selected_tags %}selected{% endif %}>{{ tag.replace('_', ' ').title() }}</option>
                 {% endfor %}
             </select>
             <small class="text-gray-400">Hold Ctrl (Cmd on Mac) to select multiple tags.</small>
         
-            <button type="submit"
-                class="bg-gradient-to-r from-blue-500 to-purple-600 px-6 py-3 rounded-md text-white font-semibold transition hover:scale-105 hover:shadow-lg">
+            <button type="submit" class="bg-gradient-to-r from-blue-500 to-purple-600 px-6 py-3 rounded-md text-white font-semibold transition hover:scale-105 hover:shadow-lg">
                 🎯 Apply Filter
             </button>
         </form>
-        
 
-        <!-- Sorting Buttons -->
         <div class="flex justify-center space-x-4 mb-6">
             <a href="{{ url_for('problems', sort='solvers', order='desc') }}"
                 class="bg-gray-700 px-5 py-3 rounded-md text-white transition hover:scale-105 hover:bg-blue-500">
@@ -63,25 +45,18 @@
             </a>
         </div>
 
-        <!-- Problem List -->
         <ul class="space-y-4 w-full">
             {% for problem, solvers in problems %}
             <a href="{{ url_for('problem', id=problem.id) }}" class="block">
                 <li class="flex justify-between items-center bg-gray-900 p-4 rounded-lg transition transform hover:scale-[1.02] hover:bg-gray-800 shadow-lg border border-gray-700">
-                    <span class="text-white font-semibold text-lg">
-                        {{ problem.title }}
-                    </span>
+                    <span class="text-white font-semibold text-lg">{{ problem.title }}</span>
                     <span class="text-green-400 font-semibold">🏆 Solvers: {{ solvers }}</span>
                 </li>
             </a>            
             {% else %}
-            <li class="text-center text-gray-400 text-lg py-4">
-                🚨 No problems found. Try adjusting filters!
-            </li>
+            <li class="text-center text-gray-400 text-lg py-4">🚨 No problems found. Try adjusting filters!</li>
             {% endfor %}
         </ul>
-        
-        
     </div>
 </div>
 {% endblock %}
