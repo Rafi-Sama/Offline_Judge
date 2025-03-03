@@ -1,0 +1,132 @@
+/* Background: Futuristic Nebula Flow */
+@keyframes nebula-flow {
+    0% { background-position: 0% 50%; }
+    100% { background-position: 100% 50%; }
+}
+body {
+    background: radial-gradient(circle at center, #0a0a0a, #000);
+    background-size: 400% 400%;
+    animation: nebula-flow 10s infinite alternate linear;
+    overflow-x: hidden;
+    color: white;
+}
+
+/* Floating Animated Particles */
+@keyframes float {
+    from { transform: translateY(0px); opacity: 1; }
+    to { transform: translateY(-200px); opacity: 0; }
+}
+.particles div {
+    position: absolute;
+    width: 6px;
+    height: 6px;
+    background: rgba(0, 255, 255, 0.7);
+    box-shadow: 0 0 10px rgba(0, 255, 255, 0.7);
+    border-radius: 50%;
+    animation: float 5s linear infinite;
+    opacity: 0.8;
+}
+
+/* 3D Floating Effect */
+.floating {
+    transition: transform 0.2s ease-out, box-shadow 0.3s;
+}
+.floating:hover {
+    transform: translateY(-6px) scale(1.05);
+    box-shadow: 0px 0px 15px rgba(0, 255, 255, 0.5);
+}
+
+/* Glitching Effect */
+@keyframes glitch {
+    0%, 100% { text-shadow: 2px 2px rgba(0, 255, 255, 0.7); }
+    50% { text-shadow: -2px -2px rgba(255, 0, 255, 0.7); }
+}
+.glitch-text {
+    animation: glitch 1.5s infinite alternate;
+}
+
+/* Glassmorphism */
+.glass-card {
+    backdrop-filter: blur(20px);
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    padding: 24px;
+    border-radius: 14px;
+    box-shadow: 0 0 25px rgba(0, 255, 255, 0.35);
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.3s ease-in-out, box-shadow 0.3s;
+}
+.glass-card:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 30px rgba(0, 255, 255, 0.6);
+}
+
+/* Shine Inside the Box */
+@keyframes shine {
+    0% { left: -100%; }
+    100% { left: 100%; }
+}
+.shine-effect {
+    position: absolute;
+    top: 0;
+    left: -120%;
+    width: 150%;
+    height: 100%;
+    background: linear-gradient(120deg, rgba(255, 255, 255, 0) 40%, rgba(255, 255, 255, 0.25) 50%, rgba(255, 255, 255, 0) 60%);
+    animation: shine 3s infinite linear;
+    opacity: 0.4;
+}
+
+/* Base Button Styling */
+.neon-button {
+    display: inline-block;
+    padding: 14px 32px;
+    font-size: 1.2rem;
+    font-weight: bold;
+    border-radius: 8px;
+    text-transform: uppercase;
+    position: relative;
+    overflow: hidden;
+    letter-spacing: 1px;
+    color: #ffffff;
+    text-shadow: 0 0 8px rgba(255, 255, 255, 0.8);
+    box-shadow: 0 0 15px rgba(0, 255, 255, 0.6), 0 0 5px rgba(0, 255, 255, 0.4);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    background-size: 200% 200%;
+    background-image: linear-gradient(90deg, #00c9ff, #3b82f6, #ff00ff);
+    animation: gradient-shift 3s infinite alternate ease-in-out;
+}
+
+/* Gradient Animation */
+@keyframes gradient-shift {
+    0% { background-position: 0% 50%; }
+    100% { background-position: 100% 50%; }
+}
+
+/* Hover Effect - Cyber Glow */
+.neon-button:hover {
+    transform: scale(1.1);
+    box-shadow: 0 0 25px rgba(0, 255, 255, 1), 0 0 10px rgba(255, 0, 255, 0.8);
+}
+
+/* Active Click Effect */
+.neon-button:active {
+    transform: scale(1.05);
+    box-shadow: 0 0 30px rgba(0, 255, 255, 1), 0 0 15px rgba(255, 0, 255, 0.8);
+}
+
+
+/* Fade-in Effects */
+@keyframes fade-in {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+.animate-fade-in {
+    animation: fade-in 0.6s ease-in-out;
+}
+.input-field { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #444; background: #1a1a1a; color: #ddd; outline: none; transition: 0.2s; }
+.input-field:focus { border-color: #06b6d4; background: #222; }
+.label { display: block; text-align: left; font-weight: bold; color: #bbb; margin-bottom: 4px; }
+.submit-btn { width: 100%; padding: 12px; background: #06b6d4; color: white; font-weight: bold; border-radius: 8px; transition: 0.2s; }
+.submit-btn:hover { background: #0891b2; }

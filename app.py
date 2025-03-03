@@ -1,14 +1,18 @@
 import os  # OS operations
+import secrets
 from flask import Flask  # web framework
 from flask_sqlalchemy import SQLAlchemy  # ORM support
 from flask_login import LoginManager  # user session management
-from config import Config  # configuration settings
-from extensions import socketio  # real-time communication
+from flask_socketio import SocketIO
 from flask_migrate import Migrate  # database migrations
 
 app = Flask(__name__)  # instantiate Flask app
-app.config.from_object(Config)  # load configuration
 
+app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', secrets.token_hex(16))  # Secure key generation
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(os.path.abspath(os.path.dirname(__file__)), 'data', 'site.db')
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+socketio = SocketIO()  # initialize SocketIO instance
 socketio.init_app(app)  # initialize real-time communication
 db = SQLAlchemy(app)  # set up ORM
 

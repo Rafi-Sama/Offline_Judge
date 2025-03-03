@@ -29,7 +29,6 @@ class TestCase(db.Model):
     input_data = db.Column(db.Text, nullable=False)
     output_data = db.Column(db.Text, nullable=False)
     is_sample = db.Column(db.Boolean, default=False)  # Checkbox for sample test case
-
     problem = db.relationship('Problem', backref=db.backref('test_cases', lazy=True))
 
 class ProblemSet(db.Model):

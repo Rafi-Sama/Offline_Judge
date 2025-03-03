@@ -1,57 +1,39 @@
 {% extends "base.html" %}
-
 {% block content %}
-<div class="flex justify-center items-center min-h-screen bg-gray-950 py-10">
+<div class="flex justify-center items-center min-h-[calc(100vh-250px)]  py-10">
     <div class="glass p-8 rounded-lg w-full max-w-3xl shadow-lg border border-gray-700">
         <h1 class="text-3xl font-bold neon-text text-center mb-6">🏆 Manage Contests</h1>
-
         {% if contests %}
-            <ul class="space-y-6">
-                {% for contest in contests %}
-                <li class="p-4 rounded-lg bg-gray-900 text-white shadow-md border border-gray-700 flex justify-between items-center transition duration-300 hover:shadow-lg hover:border-gray-600">
-                    <div class="w-full">
-                        <h2 class="text-xl font-semibold text-blue-400">{{ contest.name }}</h2>
-                        <p class="text-sm text-gray-400 mt-2">Edit the contest timings below:</p>
-
-                        <form method="POST" action="{{ url_for('manage_contests') }}" class="mt-4 flex items-center space-x-4">
-                            <input type="hidden" name="contest_id" value="{{ contest.id }}">
-
-                            <!-- Start Time -->
-                            <div class="flex flex-col space-y-1">
-                                <label for="start_time" class="text-gray-400 font-medium text-sm">📅 Start</label>
-                                <input type="datetime-local" id="start_time" name="start_time" value="{{ contest.start_time.strftime('%Y-%m-%dT%H:%M') }}" class="text-sm text-gray-400 p-2 rounded-lg border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 w-[120px]" />
-                            </div>
-
-                            <!-- End Time -->
-                            <div class="flex flex-col space-y-1">
-                                <label for="end_time" class="text-gray-400 font-medium text-sm">⏳ End</label>
-                                <input type="datetime-local" id="end_time" name="end_time" value="{{ contest.end_time.strftime('%Y-%m-%dT%H:%M') }}" class="text-sm text-gray-400 p-2 rounded-lg border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 w-[120px]" />
-                            </div>
-
-                            <!-- Save Button -->
-                            <button type="submit" class="btn btn-primary py-2 px-4 bg-cyan-600 hover:bg-cyan-700 text-white font-bold rounded-lg transition duration-300 shadow-md">
-                                Save
-                            </button>
-                        </form>
-                    </div>
-
-                    <div class="flex space-x-4 mt-6">
-                        <!-- Manage Problems Button -->
-                        <a href="{{ url_for('manage_problems', contest_id=contest.id) }}" class="text-yellow-400 hover:text-yellow-300 flex items-center space-x-2 py-2 px-4 rounded-md transition duration-300 hover:bg-yellow-600">
-                            <span>⚙️</span><span>Manage Problems</span>
-                        </a>
-                        <!-- Delete Contest Button -->
-                        <form method="POST" action="{{ url_for('delete_contest', contest_id=contest.id) }}" onsubmit="return confirm('Are you sure you want to delete this contest?');">
-                            <button type="submit" class="flex items-center px-4 py-2 bg-red-500 hover:bg-red-600 text-white font-bold rounded-lg transition duration-300 shadow-md">
-                                <span>❌</span><span>Delete</span>
-                            </button>
-                        </form>
-                    </div>
-                </li>
-                {% endfor %}
-            </ul>
+        <ul class="space-y-6">
+            {% for contest in contests %}
+            <li class="p-4 rounded-lg bg-gray-900 text-white shadow-md border border-gray-700 flex justify-between items-center hover:shadow-lg hover:border-gray-600">
+                <div class="w-full">
+                    <h2 class="text-xl font-semibold text-blue-400">{{ contest.name }}</h2>
+                    <p class="text-sm text-gray-400 mt-2">Edit the contest timings below:</p>
+                    <form method="POST" action="{{ url_for('manage_contests') }}" class="mt-4 flex items-center space-x-4">
+                        <input type="hidden" name="contest_id" value="{{ contest.id }}">
+                        <div class="flex flex-col">
+                            <label class="text-gray-400 text-sm">📅 Start</label>
+                            <input type="datetime-local" name="start_time" value="{{ contest.start_time.strftime('%Y-%m-%dT%H:%M') }}" class="text-sm text-gray-400 p-2 rounded-lg border border-gray-600 focus:ring-2 focus:ring-blue-500 w-[120px]" />
+                        </div>
+                        <div class="flex flex-col">
+                            <label class="text-gray-400 text-sm">⏳ End</label>
+                            <input type="datetime-local" name="end_time" value="{{ contest.end_time.strftime('%Y-%m-%dT%H:%M') }}" class="text-sm text-gray-400 p-2 rounded-lg border border-gray-600 focus:ring-2 focus:ring-blue-500 w-[120px]" />
+                        </div>
+                        <button type="submit" class="btn btn-primary py-2 px-4 bg-cyan-600 hover:bg-cyan-700 text-white font-bold rounded-lg shadow-md">Save</button>
+                    </form>
+                </div>
+                <div class="flex space-x-4 mt-6">
+                    <a href="{{ url_for('manage_problems', contest_id=contest.id) }}" class="text-yellow-400 hover:text-yellow-300 flex items-center space-x-2 py-2 px-4 rounded-md hover:bg-yellow-600"><span>⚙️</span><span>Manage Problems</span></a>
+                    <form method="POST" action="{{ url_for('delete_contest', contest_id=contest.id) }}" onsubmit="return confirm('Are you sure you want to delete this contest?');">
+                        <button type="submit" class="flex items-center px-4 py-2 bg-red-500 hover:bg-red-600 text-white font-bold rounded-lg shadow-md"><span>❌</span><span>Delete</span></button>
+                    </form>
+                </div>
+            </li>
+            {% endfor %}
+        </ul>
         {% else %}
-            <p class="text-gray-400 text-center text-lg">🚀 No contests available. <a href="{{ url_for('add_contest') }}" class="text-cyan-400 hover:text-cyan-300">Create one now!</a></p>
+        <p class="text-gray-400 text-center text-lg">🚀 No contests available. <a href="{{ url_for('add_contest') }}" class="text-cyan-400 hover:text-cyan-300">Create one now!</a></p>
         {% endif %}
     </div>
 </div>
