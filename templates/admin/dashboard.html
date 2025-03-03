@@ -1,21 +1,41 @@
-{% extends "base.html" %}
-
-{% block content %}
-<div class="flex justify-center items-center min-h-screen">
-    <div class="glass p-8 rounded-lg w-full max-w-xl shadow-lg text-center">
-        <h1 class="text-3xl font-bold neon-text mb-6">Admin Dashboard</h1>
-        
-        <a href="{{ url_for('add_problem') }}"
-            class="block w-full p-4 rounded-lg bg-pink-500 hover:bg-pink-600 text-white font-bold transition duration-300 neon-hover">
-            Add New Problem
-        </a>
-
-        <h2 class="text-xl font-bold mt-6 text-white">Problems List</h2>
-        <ul class="text-gray-300">
-            {% for problem in problems %}
-            <li class="mt-2">{{ problem.title }} - <a href="{{ url_for('problems') }}" class="text-blue-400">View</a></li>
+{% extends "base.html" %} {% block content %}
+<div class="flex justify-center items-center min-h-[calc(100vh-250px)]">
+    <div class="glass p-10 rounded-2xl w-full max-w-2xl shadow-2xl text-center">
+        <h1 class="text-4xl font-extrabold text-cyan-400 mb-8 neon-text">Admin Dashboard</h1>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {% for url, color, text in [
+                ('add_contest', 'green', '➕ Add New Contest'),
+                ('manage_contests', 'red', '🛠 Manage Contests'),
+                ('add_problem', 'pink', '✏️ Add New Problem'),
+                ('manage_problems', 'purple', '📋 Manage Problems'),
+                ('manage_users', 'blue', '👥 Manage Users'),
+                ('manage_submissions', 'yellow', '📂 Manage Submissions')
+            ] %}
+            <a href="{{ url_for(url) }}" class="dashboard-btn bg-{{ color }}-500 hover:bg-{{ color }}-600">
+                {{ text }}
+            </a>
             {% endfor %}
-        </ul>
+        </div>
     </div>
 </div>
+
+<style>
+    .dashboard-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 16px;
+        border-radius: 12px;
+        font-weight: bold;
+        color: white;
+        text-decoration: none;
+        font-size: 1.2rem;
+        transition: transform 0.2s ease-in-out, background 0.3s;
+    }
+
+    .dashboard-btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0px 4px 10px rgba(255, 255, 255, 0.2);
+    }
+</style>
 {% endblock %}

@@ -1,34 +1,38 @@
-import os
-from flask import Flask
-from flask_sqlalchemy import SQLAlchemy
-from flask_login import LoginManager
-from config import Config  # Assuming your config is in config.py
-from extensions import socketio
+import os  # OS operations
+import secrets
+from flask import Flask  # web framework
+from flask_sqlalchemy import SQLAlchemy  # ORM support
+from flask_login import LoginManager  # user session management
+from flask_socketio import SocketIO
+from flask_migrate import Migrate  # database migrations
 
-app = Flask(__name__)
-app.config.from_object(Config)
+app = Flask(__name__)  # instantiate Flask app
 
-socketio.init_app(app)  # Ensure socketio is initialized
-db = SQLAlchemy(app)
+app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', secrets.token_hex(16))  # Secure key generation
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(os.path.abspath(os.path.dirname(__file__)), 'data', 'site.db')
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-login_manager = LoginManager()
-login_manager.init_app(app)
-login_manager.login_view = "login"  # Redirect users who are not logged in
+socketio = SocketIO()  # initialize SocketIO instance
+socketio.init_app(app)  # initialize real-time communication
+db = SQLAlchemy(app)  # set up ORM
 
-from routes import *
+with app.app_context():  # ensure operations run within application context
+    if not os.path.exists(os.path.join("data", "site.db")):  # check if database file does not exist
+        db.create_all()  # create all database tables
 
-# @app.route('/')
-def home():
-    return "Welcome to the Offline Judge!"
-# Ensure the 'data' directory exists
-data_dir = os.path.join(os.path.dirname(__file__), 'data')
-if not os.path.exists(data_dir):
-    os.makedirs(data_dir)
+migrate = Migrate(app, db)  # enable database migrations
 
+login_manager = LoginManager()  # create login manager
+login_manager.init_app(app)  # initialize login management
+login_manager.login_view = "login"  # set login route
 
-# Rest of your code...
+from routes import *  # import route definitions
+
+def home(): return "Welcome to the Offline Judge!"  # define home endpoint
+
+data_dir = os.path.join(os.path.dirname(__file__), 'data')  # determine data directory path
+os.makedirs(data_dir, exist_ok=True)  # ensure data directory exists
+
 if __name__ == '__main__':
-    with app.app_context():
-        db.create_all()  # Create database tables
-    app.run(host='0.0.0.0', port=5000, debug=True)
-    # Start the app (e.g., app.run() or socketio.run())
+    with app.app_context(): db.create_all()  # ensure tables exist within context
+    app.run(host='0.0.0.0', port=5000, debug=True)  # run the application

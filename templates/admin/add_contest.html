@@ -1,0 +1,13 @@
+{% extends "base.html" %} {% block content %}
+<div class="flex justify-center items-center min-h-[calc(100vh-250px)]">
+    <div class="w-full max-w-md glass">
+        <h1 class="text-2xl font-bold text-gray-100 mb-4">➕ Add New Contest</h1>
+        <form method="POST" class="space-y-4">
+            <input type="text" name="name" placeholder="Contest Name" required class="input-field" autocomplete="off">
+            <div><label class="label">📅 Start Time:</label><input type="datetime-local" name="start_time" required class="input-field"></div>
+            <div><label class="label">⏳ End Time:</label><input type="datetime-local" name="end_time" required class="input-field"></div>
+            <button type="submit" class="submit-btn">✅ Add Contest</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

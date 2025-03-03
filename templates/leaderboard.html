@@ -1,23 +1,21 @@
-{% extends "base.html" %}
-
-{% block content %}
-<div class="flex justify-center items-center min-h-screen">
-    <div class="glass p-8 rounded-lg w-full max-w-4xl shadow-lg">
-        <h1 class="text-3xl font-bold neon-text text-center mb-6">Leaderboard</h1>
-        <table class="w-full text-left border-collapse neon-table">
+{% extends "base.html" %}  {% block content %}
+<div class="flex justify-center items-center min-h-[calc(100vh-250px)] ">
+    <div class="glass p-8 rounded-lg w-full max-w-4xl shadow-xl backdrop-blur-md glow-border">
+        <h1 class="text-4xl font-extrabold neon-text text-center mb-6">🏆 ProblemSet Leaderboard</h1>
+        <table class="w-full text-left border-collapse bg-gray-900 rounded-lg shadow-md">
             <thead>
-                <tr class="text-gray-300 border-b border-gray-600">
-                    <th class="p-3">Rank</th>
-                    <th class="p-3">Username</th>
-                    <th class="p-3">Problems Solved</th>
+                <tr class="text-cyan-400 border-b border-cyan-600 text-lg">
+                    {% for col in ["Rank", "Username", "🎯 Solved"] %}
+                        <th class="p-4 {% if loop.index != 2 %}text-center{% endif %}">{{ col }}</th>
+                    {% endfor %}
                 </tr>
             </thead>
             <tbody>
                 {% for entry in standings %}
-                <tr class="hover:bg-gray-800 transition">
-                    <td class="p-3 text-center">{{ loop.index }}</td>
-                    <td class="p-3">{{ entry.username }}</td>
-                    <td class="p-3 text-center">{{ entry.solved }}</td>
+                <tr class="hover:bg-gray-800 transition {% set colors = ['text-yellow-400 font-bold', 'text-gray-300', 'text-orange-400'] %}{{ colors[loop.index-1] if loop.index <= 3 else '' }}">
+                    <td class="p-4 text-center">{{ ['🥇','🥈','🥉'][loop.index-1] if loop.index <= 3 else loop.index }}</td>
+                    <td class="p-4">{{ entry.username }}</td>
+                    <td class="p-4 text-center">{{ entry.solved }}</td>
                 </tr>
                 {% endfor %}
             </tbody>

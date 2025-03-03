@@ -5,75 +5,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Offline Judge</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Poppins:wght@300;600&display=swap');
-
-        body {
-            background: linear-gradient(135deg, #0d0d2b 0%, #090922 100%);
-            color: #b0b3d6;
-            font-family: 'Poppins', sans-serif;
-        }
-
-        .glass {
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 15px;
-            backdrop-filter: blur(20px);
-            box-shadow: 0 0 20px rgba(0, 224, 255, 0.15);
-            padding: 16px;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-        }
-
-        .neon-text {
-            font-family: 'Orbitron', sans-serif;
-            text-transform: uppercase;
-            font-weight: 700;
-            text-shadow: 0 0 8px rgba(0, 224, 255, 0.6);
-        }
-
-        .neon-button {
-            font-family: 'Orbitron', sans-serif;
-            text-transform: uppercase;
-            padding: 12px 24px;
-            border-radius: 8px;
-            transition: 0.3s ease-in-out;
-            letter-spacing: 1px;
-            background: linear-gradient(135deg, #00e0ff 0%, #0095ff 100%);
-            color: #0d0d2b;
-            font-weight: 600;
-            box-shadow: 0 0 12px rgba(0, 224, 255, 0.6);
-        }
-
-        .neon-button:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 0 20px rgba(0, 224, 255, 0.9);
-        }
-
-        .neon-hover {
-            transition: 0.3s;
-        }
-
-        .neon-hover:hover {
-            color: #00e0ff;
-            text-shadow: 0 0 8px rgba(0, 224, 255, 0.7);
-        }
-
-        .glow-border {
-            border: 1px solid rgba(0, 224, 255, 0.4);
-            box-shadow: 0 0 12px rgba(0, 224, 255, 0.3);
-        }
-    </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/theme.css') }}">
 </head>
 <body>
-    <nav class="glass p-4 mx-6 mt-6 flex justify-between items-center">
+    <nav class="glass-glow p-4 mx-6 mt-6 flex justify-between items-center">
         <a href="{{ url_for('index') }}" class="text-2xl neon-text">Offline Judge</a>
         <div class="space-x-6">
-            <a href="{{ url_for('problems') }}" class="neon-hover">Problems</a>
             <a href="{{ url_for('leaderboard') }}" class="neon-hover">Leaderboard</a>
+            <a href="{{ url_for('get_contests') }}" class="neon-hover">Contests</a>
             {% if current_user.is_authenticated %}
+                <a href="{{ url_for('problems') }}" class="neon-hover">Problem Set</a>
                 <a href="{{ url_for('submission_history') }}" class="neon-hover">Submissions</a>
-                {% if current_user.role == 'admin' %}
-                    <a href="{{ url_for('admin_dashboard') }}" class="text-yellow-400 neon-hover">Admin</a>
-                {% endif %}
+                {% if current_user.role == 'admin' %}<a href="{{ url_for('admin_dashboard') }}" class="text-yellow-400 neon-hover">Admin</a>{% endif %}
                 <a href="{{ url_for('logout') }}" class="text-red-400 neon-hover">Logout</a>
             {% else %}
                 <a href="{{ url_for('login') }}" class="neon-hover">Login</a>
@@ -82,15 +25,17 @@
         </div>
     </nav>
     
+    <!-- Background Particles -->
+    <div class="particles">
+        {% for i in range(25) %}
+        <div style="top: {{ range(5, 95) | random }}%; left: {{ range(5, 95) | random }}%; animation-duration: {{ range(3, 6) | random }}s;"></div>
+        {% endfor %}
+    </div>
 
     <div class="container mx-auto my-10 px-6">
         {% with messages = get_flashed_messages() %}
             {% if messages %}
-                <div class="glass p-3 text-pink-400">
-                    {% for message in messages %}
-                        <p>{{ message }}</p>
-                    {% endfor %}
-                </div>
+                <div class="glass p-3 text-pink-400">{% for message in messages %}<p>{{ message }}</p>{% endfor %}</div>
             {% endif %}
         {% endwith %}
         {% block content %}{% endblock %}

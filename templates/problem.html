@@ -1,15 +1,107 @@
-{% extends "base.html" %}
-
-{% block content %}
-<div class="flex justify-center items-center min-h-screen">
+{% extends "base.html" %}  {% block content %}
+<div class="flex flex-col justify-center items-center min-h-[calc(100vh-250px)] gap-6">
     <div class="glass p-8 rounded-lg w-full max-w-2xl shadow-lg">
         <h1 class="text-3xl font-bold neon-text text-center mb-6">{{ problem.title }}</h1>
         <p class="text-gray-300 mb-6 whitespace-pre-line">{{ description }}</p>
 
-        <a href="{{ url_for('submit', problem_id=problem.id) }}" 
-           class="bg-pink-500 hover:bg-pink-700 text-white font-bold py-2 px-4 rounded transition duration-300">
-            Submit Solution
-        </a>
+        <p class="text-gray-300 font-semibold">Difficulty: 
+            <span class="text-lg" style="color: 
+                {% if problem.difficulty == 'Easy' %} #00ff00;
+                {% elif problem.difficulty == 'Medium' %} #ff9900;
+                {% elif problem.difficulty == 'Hard' %} #ff0000;
+                {% elif problem.difficulty == 'Extreme' %} #000000;
+                {% endif %}">
+                {{ problem.difficulty }}
+            </span>
+        </p>
+
+        {% if problem.tags %}
+        <p class="text-gray-300 font-semibold mt-3">Tags: 
+            {% for tag in problem.tags.split(',') %}
+                <span class="bg-gray-700 text-gray-300 px-2 py-1 rounded">{{ tag }}</span>
+            {% endfor %}
+        </p>
+        {% endif %}
+
+        {% if sample_test_cases %}
+        <h2 class="text-2xl font-semibold text-gray-300 mt-6">Sample Test Cases</h2>
+        <div class="mt-4">
+            {% for test in sample_test_cases %}
+                <div>
+                    <p>Input: {{ test.input_data }}</p>
+                    <p>Output: {{ test.output_data }}</p>
+                </div>
+            {% endfor %}
+        </div>
+        {% else %}
+            <p>No Sample Test Cases Found.</p>
+        {% endif %}
+    </div>
+
+    <div class="flex justify-center items-center">
+        <div class="glass p-8 rounded-lg w-full max-w-3xl shadow-lg">
+            <h1 class="text-3xl font-bold neon-text text-center mb-6">Submit Solution for {{ problem.title }}</h1>
+            <form method="POST" class="space-y-6">
+                <label for="language" class="text-gray-300 font-semibold">Choose Language:</label>
+                <select name="language" id="language"
+                    class="w-full p-3 rounded-lg bg-gray-900 text-gray-300 border border-gray-700 focus:ring-2 focus:ring-pink-500 transition">
+                    {% for lang in ["cpp", "c", "python"] %}
+                    <option value="{{ lang }}" {% if lang == "cpp" %}selected{% endif %}>
+                        {{ lang.upper() }}
+                    </option>
+                    {% endfor %}
+                </select>
+    
+                <textarea name="code" rows="10" required
+                    class="w-full p-4 rounded-lg bg-gray-900 text-gray-300 border border-gray-700 focus:ring-2 focus:ring-pink-500 transition" placeholder="// Write your C++ code here..."></textarea>
+                
+                <div class="flex space-x-4">
+                    {% for btn in [{"id": "run-button", "text": "Run", "bg": "blue"}, {"text": "Submit", "bg": "pink"}] %}
+                    <button type="{{ 'button' if btn.id else 'submit' }}" id="{{ btn.id | default('') }}"
+                        class="w-full p-3 rounded-lg bg-{{ btn.bg }}-500 hover:bg-{{ btn.bg }}-600 text-white font-bold transition duration-300 neon-hover">
+                        {{ btn.text }}
+                    </button>
+                    {% endfor %}
+                </div>
+            </form>
+
+            <div id="run-results" class="mt-6 text-gray-300"></div>
+        </div>
     </div>
 </div>
+
+<script>
+    document.getElementById("run-button").addEventListener("click", async function() {
+        let code = document.querySelector("textarea[name='code']").value;
+        let language = document.querySelector("select[name='language']").value;
+        let problemId = "{{ problem.id }}";
+
+        try {
+            let response = await fetch(`/problem/${problemId}/run`, {
+                method: "POST",
+                headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                body: `code=${encodeURIComponent(code)}&language=${language}`
+            });
+
+            let data = await response.json();
+            let resultDiv = document.getElementById("run-results");
+            resultDiv.innerHTML = `<p><strong>Status:</strong> ${data.status}</p>`;
+
+            if (data.results) {
+                data.results.forEach(test => {
+                    resultDiv.innerHTML += `
+                        <div class="p-4 border border-gray-700 rounded-lg mt-3">
+                            <p><strong>Input:</strong> ${test.input}</p>
+                            <p><strong>Expected:</strong> ${test.expected}</p>
+                            <p><strong>Output:</strong> ${test.output}</p>
+                            <p><strong>Status:</strong> ${test.status}</p>
+                        </div>
+                    `;
+                });
+            }
+        } catch (error) {
+            console.error("Error:", error);
+        }
+    });
+</script>
 {% endblock %}

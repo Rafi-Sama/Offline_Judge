@@ -1,27 +1,39 @@
-{% extends "base.html" %}
-
-{% block content %}
-<div class="text-center mt-16">
-    <h1 class="text-6xl font-extrabold neon-text">Welcome to Offline Judge</h1>
+{% extends "base.html" %}  {% block content %}
+<!-- Main Section -->
+<div class="flex flex-col items-center justify-center min-h-[calc(100vh-250px)] px-4 text-center">
+    <!-- Welcome Section -->
+    <h1 class="text-6xl font-extrabold glitch-text">Welcome to Offline Judge</h1>
     <p class="mt-4 text-lg text-gray-300">Push your limits in a hyper-intelligent coding arena.</p>
 
-    <div class="mt-8 space-x-4">
+    <!-- Buttons -->
+    <div class="mt-8 flex flex-wrap gap-4">
         {% if not current_user.is_authenticated %}
-            <a href="{{ url_for('login') }}" class="neon-button">Login</a>
-            <a href="{{ url_for('register') }}" class="neon-button bg-pink-500 hover:bg-pink-600">Register</a>
+            <a href="{{ url_for('login') }}" class="neon-button floating">Login</a>
+            <a href="{{ url_for('register') }}" class="neon-button floating bg-pink-500 hover:bg-pink-600">Register</a>
         {% else %}
-            <a href="{{ url_for('problems') }}" class="neon-button bg-purple-500 hover:bg-purple-600">Solve Problems</a>
-            <a href="{{ url_for('leaderboard') }}" class="neon-button bg-yellow-500 hover:bg-yellow-600 text-gray-900">Leaderboard</a>
+            <a href="{{ url_for('problems') }}" class="neon-button floating bg-purple-500 hover:bg-purple-600">Solve Problems</a>
+            <a href="{{ url_for('leaderboard') }}" class="neon-button floating bg-yellow-500 hover:bg-yellow-600 text-gray-900">Leaderboard</a>
         {% endif %}
     </div>
 
-    <div class="mt-16 mx-auto w-3/4 glass p-8 glow-border">
-        <h2 class="text-3xl font-semibold text-center text-white">🚀 Why Choose Offline Judge?</h2>
-        <ul class="mt-4 text-gray-300 list-disc list-inside">
-            <li>⚡ **Ultra-Fast Execution Engine**</li>
-            <li>🧠 **AI-Powered Code Analysis**</li>
-            <li>🌎 **Global Leaderboards & Rankings**</li>
-            <li>🔒 **Secure & Private Environment**</li>
+    <!-- Why Choose Offline Judge Section -->
+    <div class="mt-16 max-w-3xl w-full glass-card shadow-lg relative floating">
+        <!-- Shine Effect -->
+        <div class="shine-effect"></div>
+
+        <h2 class="text-3xl font-semibold text-white mb-4">🚀 Why Choose Offline Judge?</h2>
+        <ul class="text-gray-300 space-y-2">
+            {% set features = [
+                ('⚡', 'Ultra-Fast Execution Engine'),
+                ('🧠', 'AI-Powered Code Analysis'),
+                ('🌎', 'Global Leaderboards & Rankings'),
+                ('🔒', 'Secure & Private Environment')
+            ] %}
+            {% for icon, text in features %}
+                <li class="flex items-center gap-2 animate-fade-in" style="animation-delay: {{ loop.index * 0.3 }}s;">
+                    <span class="text-blue-400">{{ icon }}</span> <span>{{ text }}</span>
+                </li>
+            {% endfor %}
         </ul>
     </div>
 </div>
