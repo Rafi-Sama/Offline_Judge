@@ -12,33 +12,32 @@
                     
                     <div class="flex space-x-2">
                         <a href="{{ url_for('manage_problems', contest_id=contest.id) }}" 
-                           class="text-white text-sm flex items-center px-3 py-1 rounded-md hover:bg-purple-600 transition">
+                           class="text-white text-sm flex items-center px-3 py-1 rounded-md hover:bg-purple-800 transition">
                             ⚙️ Edit Problems
                         </a>
                         
                         <form method="POST" action="{{ url_for('delete_contest', contest_id=contest.id) }}" 
                               onsubmit="return confirm('Are you sure you want to delete this contest?');">
                             <button type="submit" 
-                                    class="px-3 py-1 bg-red-500 hover:bg-red-600 text-white text-sm font-bold rounded-md shadow transition">
+                                    class="px-3 py-1 hover:bg-red-500 text-white text-sm font-bold rounded-md shadow transition">
                                 ❌ Delete
                             </button>
                         </form>
                     </div>
                 </div>
-                <div class="flex align-center gap-2 mt-2">
-                    <p class="mt-2">Change Time :</p> 
+                <div>
                 <form method="POST" action="{{ url_for('manage_contests') }}" class="mt-2 flex items-center space-x-2">
                     <input type="hidden" name="contest_id" value="{{ contest.id }}">
 
-                    <label class="text-gray-400 text-xs">📅 Start</label>
+                    <label class="label">📅 Start</label>
                     <input type="datetime-local" name="start_time" value="{{ contest.start_time.strftime('%Y-%m-%dT%H:%M') }}" 
-                           class="text-xs text-gray-400 p-1 rounded-md border border-gray-600 focus:ring-2 focus:ring-blue-500 w-[120px]" />
+                           class="input-field p-1 w-52" />
                     
-                    <label class="text-gray-400 text-xs">⏳ End</label>
+                    <label class="label">⏳ End</label>
                     <input type="datetime-local" name="end_time" value="{{ contest.end_time.strftime('%Y-%m-%dT%H:%M') }}" 
-                           class="text-xs text-gray-400 p-1 rounded-md border border-gray-600 focus:ring-2 focus:ring-blue-500 w-[120px]" />
+                           class="input-field p-1 w-52" />
 
-                    <button type="submit" class="py-1 px-3 bg-cyan-600 hover:bg-cyan-700 text-white text-xs font-bold rounded-md shadow transition">
+                    <button type="submit" class="py-2 px-3 bg-cyan-600 hover:bg-cyan-700 text-white text-sm font-bold rounded-md shadow transition">
                         💾 Save
                     </button>
                 </form>
