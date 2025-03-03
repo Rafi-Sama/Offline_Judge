@@ -1,6 +1,4 @@
-{% extends "base.html" %}
-
-{% block content %}
+{% extends "base.html" %} {% block content %}
 <div class="flex justify-center items-center min-h-[calc(100vh-250px)]">
     <div class="glass p-8 rounded-lg w-full max-w-3xl shadow-lg">
         <h1 class="text-3xl font-bold neon-text text-center mb-6">Edit Problem</h1>
@@ -11,13 +9,11 @@
                 ("Time Limit (s)", "time_limit", "number", problem.time_limit, "0.1"),
                 ("Memory Limit (MB)", "memory_limit", "number", problem.memory_limit, "")
             ] %}
-            <div>
-                <label class="block text-gray-300 font-semibold">{{ label }}</label>
-                <input type="{{ type }}" name="{{ name }}" value="{{ value }}" required step="{{ step|default('') }}"
-                    class="w-full p-3 rounded-lg bg-gray-900 text-gray-300 border border-gray-700 focus:ring-2 focus:ring-blue-500 transition">
-            </div>
+            <label class="block text-gray-300 font-semibold">{{ label }}</label>
+            <input type="{{ type }}" name="{{ name }}" value="{{ value }}" required step="{{ step|default('') }}"
+                class="w-full p-3 rounded-lg bg-gray-900 text-gray-300 border border-gray-700 focus:ring-2 focus:ring-blue-500 transition">
             {% endfor %}
-            
+
             <label class="block text-gray-300 font-semibold">Description</label>
             <textarea name="description" rows="5" required
                 class="w-full p-3 rounded-lg bg-gray-900 text-gray-300 border border-gray-700 focus:ring-2 focus:ring-blue-500 transition">{{ problem.description }}</textarea>
@@ -30,12 +26,10 @@
                     ("greedy", "🤖 Greedy"), ("graph", "🕸️ Graphs"), ("sorting", "🔀 Sorting"),
                     ("binary_search", "🔎 Binary Search"), ("bitwise", "🧩 Bitwise"), ("recursion", "🔄 Recursion")])
             ] %}
-            <div>
-                <label class="block text-gray-300 font-semibold">{{ label }}</label>
-                <select name="{{ name }}" required class="w-full p-3 rounded-lg bg-gray-900 text-gray-300 border border-gray-700 focus:ring-2 focus:ring-blue-500 transition">
-                    {% for value, text in options %}<option value="{{ value }}">{{ text }}</option>{% endfor %}
-                </select>
-            </div>
+            <label class="block text-gray-300 font-semibold">{{ label }}</label>
+            <select name="{{ name }}" required class="w-full p-3 rounded-lg bg-gray-900 text-gray-300 border border-gray-700 focus:ring-2 focus:ring-blue-500 transition">
+                {% for value, text in options %}<option value="{{ value }}">{{ text }}</option>{% endfor %}
+            </select>
             {% endfor %}
 
             <label class="block text-gray-300 font-semibold">Test Cases</label>

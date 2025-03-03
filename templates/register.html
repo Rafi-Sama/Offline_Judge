@@ -1,6 +1,4 @@
-{% extends "base.html" %}
-
-{% block content %}
+{% extends "base.html" %}  {% block content %}
 <div class="flex justify-center items-center min-h-[calc(100vh-250px)]">
     <div class="glass p-8 rounded-lg w-96 shadow-lg">
         <h1 class="text-3xl font-bold neon-text text-center">Register</h1>
@@ -26,14 +24,17 @@
         </p>
     </div>
 </div>
-
 <style>
-    .input-field { width: 100%; padding: 0.75rem; background: transparent; border: 1px solid #aaa; border-radius: 8px; transition: 0.3s; outline: none; }
-    .input-field:focus { border-color: #ff79c6; box-shadow: 0 0 10px rgba(255, 121, 198, 0.5); }
     .error-message { color: #ff5555; font-size: 0.875rem; margin-top: 0.25rem; }
 </style>
 
 <script>
+    function validateFullName() {
+        toggleError("full_name", /^[a-zA-Z\s]{3,}$/);
+    }
+    function validateUsername() {
+        toggleError("username", /^[a-zA-Z0-9_]{3,}$/);
+    }
     function validateEmail() {
         toggleError("email", /^[^\s@]+@[^\s@]+\.[^\s@]+$/);
     }
@@ -41,13 +42,33 @@
         toggleError("password", /^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{8,}$/);
     }
     function validateConfirmPassword() {
-        toggleError("confirm_password", document.getElementById("password").value === document.getElementById("confirm_password").value);
+        const password = document.getElementById("password").value;
+        const confirmPassword = document.getElementById("confirm_password").value;
+        toggleError("confirm_password", password === confirmPassword ? /.+/ : /$/);
     }
     function toggleError(field, condition) {
-        document.getElementById(`${field}-error`).classList.toggle("hidden", typeof condition === "boolean" ? condition : condition.test(document.getElementById(field).value));
+        const input = document.getElementById(field);
+        const error = document.getElementById(`${field}-error`);
+        const isValid = typeof condition === "boolean" ? condition : condition.test(input.value);
+        error.textContent = isValid ? "" : getErrorMessage(field);
+        error.classList.toggle("hidden", isValid);
+    }
+    function getErrorMessage(field) {
+        const messages = {
+            "full_name": "Full name must contain at least 3 letters.",
+            "username": "Username must be at least 3 characters (letters, numbers, or underscore).",
+            "email": "Enter a valid email address.",
+            "password": "Password must be 8+ characters, include uppercase, number, and special character.",
+            "confirm_password": "Passwords do not match."
+        };
+        return messages[field] || "Invalid input.";
     }
     function validateForm() {
-        validateEmail(); validatePassword(); validateConfirmPassword();
+        validateFullName();
+        validateUsername();
+        validateEmail();
+        validatePassword();
+        validateConfirmPassword();
         return !document.querySelector(".error-message:not(.hidden)");
     }
 </script>

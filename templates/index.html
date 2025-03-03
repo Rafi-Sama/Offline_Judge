@@ -1,14 +1,4 @@
-{% extends "base.html" %}
-
-{% block content %}
-
-<!-- Background Particles -->
-<div class="particles">
-    {% for i in range(25) %}
-    <div style="top: {{ range(5, 95) | random }}%; left: {{ range(5, 95) | random }}%; animation-duration: {{ range(3, 6) | random }}s;"></div>
-    {% endfor %}
-</div>
-
+{% extends "base.html" %}  {% block content %}
 <!-- Main Section -->
 <div class="flex flex-col items-center justify-center min-h-[calc(100vh-250px)] px-4 text-center">
     <!-- Welcome Section -->

@@ -25,7 +25,7 @@ def index(): return render_template('index.html')  # Renders homepage
 def login():  # Handles user login
     if request.method == 'POST':  # Processes login form submission
         user = User.query.filter_by(username=request.form['username']).first()  # Looks up user by username
-        if user and check_password_hash(user.password, request.form['password']): login_user(user); return redirect(url_for('problems'))  # Logs in user if credentials match
+        if user and check_password_hash(user.password, request.form['password']): login_user(user); return redirect(url_for('problems' if current_user.role != 'admin' else 'admin_dashboard'))  # Logs in user if credentials match
         flash('Invalid username or password')  # Shows error for invalid login
     return render_template('login.html')  # Displays login page for GET
 
