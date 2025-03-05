@@ -13,16 +13,16 @@
             {% for problem in problems %}
             <li class="p-5 rounded-lg bg-gray-900 text-white shadow-md border border-gray-700 flex flex-col md:flex-row justify-between items-start md:items-center hover:shadow-lg hover:border-gray-600">
                 <div class="text-left">
-                    <p class="text-xl font-semibold text-blue-400">{{ problem.title }}</p>
+                    <p class="text-xl font-semibold text-blue-400 whitespace-pre-wrap">{{ problem.title }}</p>
                     <p class="text-sm text-gray-400 mt-1">
                         ⏱️ <span class="font-medium">Time Limit:</span> {{ problem.time_limit }}s |
                         💾 <span class="font-medium">Memory Limit:</span> {{ problem.memory_limit }}MB
                     </p>
                 </div>
                 <div class="flex space-x-3 mt-3 md:mt-0">
-                    <a href="{{ url_for('edit_problem', problem_id=problem.id) }}" class="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white font-bold rounded-lg shadow-md">✏️ Edit</a>
+                    <a href="{{ url_for('edit_problem', problem_id=problem.id) }}" class="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white font-bold rounded-lg shadow-md w-24 h-10">✏️ Edit</a>
                     <form method="POST" action="{{ url_for('delete_problem', problem_id=problem.id) }}">
-                        <button type="submit" class="px-4 py-2 bg-red-500 hover:bg-red-600 text-white font-bold rounded-lg shadow-md">✖ Delete</button>
+                        <button type="submit" class="px-4 py-2 bg-red-500 hover:bg-red-600 text-white font-bold rounded-lg shadow-md w-28 h-10">✖ Delete</button>
                     </form>
                 </div>
             </li>

@@ -1,8 +1,9 @@
-{% extends "base.html" %} {% block content %}
+{% extends "base.html" %}
+{% block content %}
 <div class="flex justify-center items-center min-h-[calc(100vh-250px)] py-8 ">
     <div class="glass p-8 rounded-lg w-full max-w-3xl shadow-lg border border-gray-700">
         <h1 class="text-3xl font-bold neon-text text-center mb-6">🚀 Add a New Problem</h1>
-        <form method="POST">
+        <form method="POST" id="problem-form">
             <div><label class="block text-gray-300 font-semibold">Title</label>
                 <input type="text" name="title" required class="w-full p-3 rounded-lg bg-gray-900 text-gray-300 border border-gray-700 focus:ring-2 focus:ring-blue-500 transition">
             </div>
@@ -15,7 +16,7 @@
                 </div>
             </div>
             <div><label class="block text-gray-300 font-semibold">Description</label>
-                <textarea name="description" rows="5" required class="w-full p-3 rounded-lg bg-gray-900 text-gray-300 border border-gray-700 focus:ring-2 focus:ring-blue-500 transition"></textarea>
+                <textarea name="description" rows="20" required class="w-full p-3 rounded-lg bg-gray-900 text-gray-300 border border-gray-700 focus:ring-2 focus:ring-blue-500 transition"></textarea>
             </div>
             <div><label class="block text-gray-300 font-semibold">Difficulty Level</label>
                 <select name="difficulty" required class="w-full p-3 rounded-lg bg-gray-900 text-gray-300 border border-gray-700 focus:ring-2 focus:ring-blue-500 transition">
@@ -42,11 +43,11 @@
             </div>
             <div id="test-cases-container">
                 <label class="block text-gray-300 font-semibold">Test Cases</label>
-                <div class="test-case">
+                <div class="test-case first-test-case">
                     <label class="text-gray-300">Test Input</label>
-                    <textarea name="input[]" rows="3" class="w-full p-3 rounded-lg bg-gray-900 text-gray-300 border border-gray-700 focus:ring-2 focus:ring-blue-500 transition"></textarea>
+                    <textarea name="input[]" rows="3" class="w-full p-3 rounded-lg bg-gray-900 text-gray-300 border border-gray-700 focus:ring-2 focus:ring-blue-500 transition" required></textarea>
                     <label class="text-gray-300">Expected Output</label>
-                    <textarea name="output[]" rows="3" class="w-full p-3 rounded-lg bg-gray-900 text-gray-300 border border-gray-700 focus:ring-2 focus:ring-blue-500 transition"></textarea>
+                    <textarea name="output[]" rows="3" class="w-full p-3 rounded-lg bg-gray-900 text-gray-300 border border-gray-700 focus:ring-2 focus:ring-blue-500 transition" required></textarea>
                     <label class="text-gray-300 flex items-center"><input type="checkbox" name="sample[]" value="0" class="mr-2"> Mark as Sample Test Case</label>
                 </div>
             </div>
@@ -55,6 +56,7 @@
         </form>
     </div>
 </div>
+
 <script>
 document.getElementById('add-test-case').addEventListener('click', function () {
     let container = document.getElementById('test-cases-container');
@@ -63,12 +65,35 @@ document.getElementById('add-test-case').addEventListener('click', function () {
     newTestCase.classList.add('test-case', 'mt-4');
     newTestCase.innerHTML = `
         <label class="text-gray-300">Test Input</label>
-        <textarea name="input[]" rows="3" class="w-full p-3 rounded-lg bg-gray-900 text-gray-300 border border-gray-700 focus:ring-2 focus:ring-blue-500 transition"></textarea>
+        <textarea name="input[]" rows="3" class="w-full p-3 rounded-lg bg-gray-900 text-gray-300 border border-gray-700 focus:ring-2 focus:ring-blue-500 transition" required></textarea>
         <label class="text-gray-300">Expected Output</label>
-        <textarea name="output[]" rows="3" class="w-full p-3 rounded-lg bg-gray-900 text-gray-300 border border-gray-700 focus:ring-2 focus:ring-blue-500 transition"></textarea>
+        <textarea name="output[]" rows="3" class="w-full p-3 rounded-lg bg-gray-900 text-gray-300 border border-gray-700 focus:ring-2 focus:ring-blue-500 transition" required></textarea>
         <label class="text-gray-300 flex items-center"><input type="checkbox" name="sample[]" value="${testCaseCount}" class="mr-2"> Mark as Sample Test Case</label>
+        <button type="button" class="remove-test-case p-2 bg-red-500 hover:bg-red-600 text-white rounded mt-2 font-bold">Remove</button>
     `;
     container.appendChild(newTestCase);
 });
+
+// Delegate event listener to remove test cases dynamically
+document.getElementById('test-cases-container').addEventListener('click', function (event) {
+    if (event.target.classList.contains('remove-test-case')) {
+        let testCases = document.querySelectorAll('.test-case');
+        if (testCases.length > 1) {
+            event.target.closest('.test-case').remove();
+        } else {
+            alert('You must have at least one test case.');
+        }
+    }
+});
+
+// Form validation to ensure at least one test case exists before submission
+document.getElementById('problem-form').addEventListener('submit', function(event) {
+    let testCases = document.querySelectorAll('.test-case');
+    if (testCases.length === 0) {
+        event.preventDefault();
+        alert('You must add at least one test case.');
+    }
+});
 </script>
+
 {% endblock %}
