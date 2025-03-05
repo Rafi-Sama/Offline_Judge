@@ -75,7 +75,7 @@ def submit(problem_id):
     if request.method == 'POST': 
         submission = Submission(user_id=current_user.id, problem_id=problem_id, code=request.form['code'], language=request.form.get('language', 'cpp')) 
         db.session.add(submission); db.session.commit(); judge_submission(submission); db.session.refresh(submission) 
-        flash(f'Submission #{submission.id} judged: {submission.status}', 'success'); return redirect(url_for('submit', problem_id=problem_id)) 
+        flash(f'Submission #{submission.id} judged: {submission.status}', submission.status); return redirect(url_for('submit', problem_id=problem_id)) 
     return render_template('problem.html', problem=problem) 
 
 @app.route('/submissions') 
@@ -222,20 +222,38 @@ def delete_contest(contest_id):
 
 @app.route('/contest/<int:contest_id>') 
 def contest_detail(contest_id): 
-    contest = Contest.query.get_or_404(contest_id) 
-    now = datetime.now()
-    contest_ended = contest.end_time <= now
-    solvers = dict(db.session.query(Submission.problem_id, func.count(func.distinct(Submission.user_id))).join(User).filter(User.role == 'participant', Submission.status == 'Accepted').group_by(Submission.problem_id).all()) 
-    if contest_ended:
-        if contest.final_standings:
-            standings = contest.final_standings
-        else:
-            standings = [{'username': participant.username, 'solved': sum(1 for problem in contest.problems if Submission.query.filter_by(user_id=participant.id, problem_id=problem.id, status='Accepted').count() > 0)} for participant in User.query.filter_by(role='participant').all()] 
-            contest.final_standings = standings
-            db.session.commit()
-    else:
-         standings = [{'username': participant.username, 'solved': sum(1 for problem in contest.problems if Submission.query.filter_by(user_id=participant.id, problem_id=problem.id, status='Accepted').count() > 0)} for participant in User.query.filter_by(role='participant').all()] 
-    return render_template('contest_detail.html', contest=contest, problems=contest.problems, solvers_count=solvers, standings=sorted(standings, key=lambda x: x['solved'], reverse=True)) 
+    contest = Contest.query.get_or_404(contest_id)
+    contest_ended = contest.end_time <= datetime.now()
+
+    # Get solvers count per problem
+    solvers = dict(db.session.query(Submission.problem_id, func.count(func.distinct(Submission.user_id)))
+                   .join(User).filter(User.role == 'participant', Submission.status == 'Accepted')
+                   .group_by(Submission.problem_id).all())
+
+    def calculate_standings():
+        standings = []
+        for participant in User.query.filter_by(role='participant'):
+            submissions = Submission.query.filter_by(user_id=participant.id, 
+                                                     problem_id=tuple(p.id for p in contest.problems))\
+                .order_by(Submission.timestamp).all()
+
+            solved, penalty, attempts = set(), 0, {}
+            for submission in submissions:
+                if submission.status == 'Accepted' and submission.problem_id not in solved:
+                    solved.add(submission.problem_id)
+                    penalty += submission.timestamp.timestamp() // 60 + attempts.get(submission.problem_id, 0) * 20
+                elif submission.status != 'Accepted':
+                    attempts[submission.problem_id] = attempts.get(submission.problem_id, 0) + 1
+            standings.append({'username': participant.username, 'solved': len(solved), 'penalty': penalty})
+
+        return sorted(standings, key=lambda x: (-x['solved'], x['penalty']))
+
+    standings = contest.final_standings if contest_ended and contest.final_standings else calculate_standings()
+    if contest_ended and not contest.final_standings:
+        contest.final_standings = standings
+        db.session.commit()
+
+    return render_template('contest_detail.html', contest=contest, problems=contest.problems, solvers_count=solvers, standings=standings)
 
 @app.route('/edit_problem/<int:problem_id>', methods=['GET', 'POST']) 
 def edit_problem(problem_id): 

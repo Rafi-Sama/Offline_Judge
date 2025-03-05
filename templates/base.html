@@ -35,7 +35,13 @@
     <div class="{% block container_class %}container mx-auto my-6 px-6 {% endblock %}">
         {% with messages = get_flashed_messages() %}
             {% if messages %}
-                <div class="glass p-3 text-pink-400 mt-5 ml-6">{% for message in messages %}<p>{{ message }}</p>{% endfor %}</div>
+            <div class="glass p-3 mt-5 ml-6">
+                {% for category, message in get_flashed_messages(with_categories=True) %}
+                    <p class="text-{{ {'success':'green','Accepted':'green','error':'red','Wrong Answer':'red','Runtime Error':'yellow','warning':'yellow','info':'blue'}.get(category, 'pink') }}-400">
+                        {{ message }}
+                    </p>
+                {% endfor %}
+            </div>            
             {% endif %}
         {% endwith %}
         {% block content %}{% endblock %}

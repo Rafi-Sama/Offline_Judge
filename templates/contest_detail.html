@@ -66,9 +66,11 @@ document.addEventListener("DOMContentLoaded", () => {
             contestEndTimer.classList.add("text-green-500");
             contestEndTimer.innerText = "The contest has ended!";
             clearInterval(countdownInterval);
+            if(timeLeft == 0) {
             setTimeout(() => {
                 window.location.reload(); // Reload the page
             }, 1000);
+        }
         }
     };
 

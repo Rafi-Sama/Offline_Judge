@@ -64,7 +64,7 @@ class CodeJudge:
                 }
             output = CodeJudge.normalize_output(stdout.decode())
             expected = CodeJudge.normalize_output(test.output_data)
-            status = 'Runtime Error' if proc.returncode != 0 else ('Passed' if output == expected else 'Failed')
+            status = 'Runtime Error' if proc.returncode != 0 else ('Passed' if output == expected else 'Wrong Answer')
             error = stderr.decode() if proc.returncode != 0 else None
             return {
                 'input': test.input_data,
@@ -187,7 +187,8 @@ def judge_submission(submission):
 
 def calculate_standings():
     return sorted(
-        [{'username': user.username, 'solved': Submission.query.filter_by(user_id=user.id, status='Accepted').count()}
-         for user in User.query.filter_by(role='participant').all()],
-        key=lambda x: x['solved'], reverse=True
+        [{'username': user.username, 'solved': solved_count, 'first_submission_time': db.session.query(Submission.timestamp).filter_by(user_id=user.id, status='Accepted').order_by(Submission.timestamp).first()[0] if solved_count > 0 else None}
+         for user in User.query.filter_by(role='participant') 
+         for solved_count in [Submission.query.filter_by(user_id=user.id, status='Accepted').count()]],
+        key=lambda x: (-x['solved'], x['first_submission_time'])
     )
