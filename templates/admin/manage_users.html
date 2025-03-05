@@ -23,7 +23,7 @@
                         <td class="px-5 py-4 text-center">
                             {% if user.id != current_user.id %}
                             <form method="POST" action="{{ url_for('delete_user', user_id=user.id) }}" class="inline">
-                                <button type="submit" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg shadow-md transition duration-300">❌ Delete</button>
+                                <button type="submit" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg shadow-md transition duration-300">✖ Delete</button>
                             </form>
                             {% else %}
                             <span class="text-gray-500">🚫 Cannot Delete</span>

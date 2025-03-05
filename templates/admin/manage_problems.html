@@ -4,7 +4,7 @@
         <h1 class="text-3xl font-bold neon-text text-center mb-6">📜 {% if contest_id %}Edit{% else %}Manage {% endif %} Problems</h1>
         {% if contest_id %}
         <p class="flex justify-between text-gray-400 text-center mb-4">Managing problems for Contest ID: {{ contest_id }}
-            <a href="{{ url_for('add_problem', contest_id=contest_id) }}" class="text-cyan-400 ">Add Problem</a>
+            <a href="{{ url_for('add_problem', contest_id=contest_id) }}" class="text-white text-sm flex items-center px-4 py-2 rounded-md bg-purple-800 hover:bg-purple-900 transition">✙  Add Problem</a>
         </p>
         {% endif %}
 
@@ -22,7 +22,7 @@
                 <div class="flex space-x-3 mt-3 md:mt-0">
                     <a href="{{ url_for('edit_problem', problem_id=problem.id) }}" class="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white font-bold rounded-lg shadow-md">✏️ Edit</a>
                     <form method="POST" action="{{ url_for('delete_problem', problem_id=problem.id) }}">
-                        <button type="submit" class="px-4 py-2 bg-red-500 hover:bg-red-600 text-white font-bold rounded-lg shadow-md">❌ Delete</button>
+                        <button type="submit" class="px-4 py-2 bg-red-500 hover:bg-red-600 text-white font-bold rounded-lg shadow-md">✖ Delete</button>
                     </form>
                 </div>
             </li>
