@@ -12,7 +12,7 @@
             </thead>
             <tbody>
                 {% for entry in standings %}
-                <tr class="hover:bg-gray-800 transition {% set colors = ['text-yellow-400 font-bold', 'text-gray-300', 'text-orange-400'] %}{{ colors[loop.index-1] if loop.index <= 3 else '' }}">
+                <tr class="hover:bg-gray-800 transition {% set colors = ['text-yellow-400 font-bold', 'text-white', 'text-orange-400'] %}{{ colors[loop.index-1] if loop.index <= 3 else 'text-gray-400' }}">
                     <td class="p-4 text-center">{{ ['🥇','🥈','🥉'][loop.index-1] if loop.index <= 3 else loop.index }}</td>
                     <td class="p-4">{{ entry.username }}</td>
                     <td class="p-4 text-center">{{ entry.solved }}</td>

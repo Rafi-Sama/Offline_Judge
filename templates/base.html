@@ -32,16 +32,16 @@
         {% endfor %}
     </div>
 
-    <div class="container mx-auto my-10 px-6">
+    <div class="{% block container_class %}container mx-auto my-6 px-6 {% endblock %}">
         {% with messages = get_flashed_messages() %}
             {% if messages %}
-                <div class="glass p-3 text-pink-400">{% for message in messages %}<p>{{ message }}</p>{% endfor %}</div>
+                <div class="glass p-3 text-pink-400 mt-5 ml-6">{% for message in messages %}<p>{{ message }}</p>{% endfor %}</div>
             {% endif %}
         {% endwith %}
         {% block content %}{% endblock %}
     </div>
 
-    <footer class="text-center py-4 glass mx-6">
+    <footer class="text-center py-4 glass mx-6 mt-6">
         <p class="text-sm text-gray-400">© 2025 Offline Judge | The Future of Competitive Coding.</p>
     </footer>
 </body>

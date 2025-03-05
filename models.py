@@ -54,10 +54,11 @@ class Contest(db.Model):
     end_time = db.Column(db.DateTime, nullable=False)  
     problems = db.relationship('Problem', backref='contest', lazy=True)  
     participation_options = db.Column(JSON, nullable=True)  
+    final_standings = db.Column(db.JSON, nullable=True)
 
 class ContestParticipant(db.Model):
     id = db.Column(db.Integer, primary_key=True)  
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)  
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     contest_id = db.Column(db.Integer, db.ForeignKey('contest.id'), nullable=False)  
     user = db.relationship('User', backref='participations')  
     contest = db.relationship('Contest', backref='participants')  

@@ -32,7 +32,6 @@ body{background:radial-gradient(circle at center,#0a0a0a,#000);background-size:4
 
 /* Glassmorphism-inspired card with a glowing edge */
 .glass-card{backdrop-filter:blur(20px);background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.2);padding:24px;border-radius:14px;box-shadow:0 0 25px rgba(0,255,255,0.35);position:relative;overflow:hidden;transition:transform 0.3s ease-in-out,box-shadow 0.3s}
-.glass-card:hover{transform:scale(1.05);box-shadow:0 0 30px rgba(0,255,255,0.6)}
 
 /* Light reflection effect moving across elements */
 @keyframes shine{0%{left:-100%}100%{left:100%}}
@@ -63,3 +62,13 @@ body{background:radial-gradient(circle at center,#0a0a0a,#000);background-size:4
 }
 
 .error-message { color: #ff5555; font-size: 0.875rem; margin-top: 0.25rem; }
+
+    /* Custom scrollbar */
+    ::-webkit-scrollbar {
+        width: 5px;
+        background-color: #020202;
+    }
+    ::-webkit-scrollbar-thumb {
+        background: #4a5568;
+        border-radius: 2px;
+    }

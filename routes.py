@@ -33,10 +33,17 @@ def login():
 def register(): 
     if request.method == 'POST': 
         username, email, password = request.form['username'], request.form['email'], request.form['password'] 
-        if User.query.filter_by(username=username).first(): flash('Username already exists') 
-        else: 
-            user = User(username=username, email=email, password=generate_password_hash(password)) 
-            db.session.add(user); db.session.commit(); flash('Registration successful! Please log in.'); return redirect(url_for('login')) 
+        if User.query.filter_by(username=username).first():
+            flash('Username already exists')
+        elif User.query.filter_by(email=email).first():
+            flash('Email is already registered.')
+        else:
+            user = User(username=username, email=email, password=generate_password_hash(password))
+            db.session.add(user)
+            db.session.commit()
+            flash('Registration successful! Please log in.')
+            return redirect(url_for('login'))
+        return redirect(url_for('register'))
     return render_template('register.html') 
 
 @app.route('/logout') 
@@ -48,7 +55,7 @@ def problems():
     args = request.args 
     search, category, difficulty, tags = args.get('search', '').lower(), args.get('category', ''), args.get('difficulty', ''), args.getlist('tags') 
     current_time = datetime.now() 
-    problems = Problem.query.filter(or_(Problem.contest_id == None, and_(Contest.end_time <= current_time, Problem.contest_id != None))).all() 
+    problems = Problem.query.filter(or_(Problem.contest_id == None, and_(Problem.contest_id != None, Contest.end_time <= current_time))).outerjoin(Contest).all()
     solvers = dict(db.session.query(Submission.problem_id, func.count(func.distinct(Submission.user_id))).join(User).filter(User.role == 'participant', Submission.status == 'Accepted').group_by(Submission.problem_id).all()) 
     filtered = [(p, solvers.get(p.id, 0)) for p in problems if (not search or search in p.title.lower()) and (not category or p.category == category) and (not difficulty or p.difficulty == difficulty) and (not tags or any(t in p.tags for t in tags))] 
     sort_by, order = args.get('sort', 'solvers'), args.get('order', 'desc') 
@@ -68,7 +75,7 @@ def submit(problem_id):
     if request.method == 'POST': 
         submission = Submission(user_id=current_user.id, problem_id=problem_id, code=request.form['code'], language=request.form.get('language', 'cpp')) 
         db.session.add(submission); db.session.commit(); judge_submission(submission); db.session.refresh(submission) 
-        flash(f'Submission #{submission.id} judged: {submission.status}', 'success'); return redirect(url_for('problems')) 
+        flash(f'Submission #{submission.id} judged: {submission.status}', 'success'); return redirect(url_for('submit', problem_id=problem_id)) 
     return render_template('problem.html', problem=problem) 
 
 @app.route('/submissions') 
@@ -141,7 +148,7 @@ def manage_users(): return render_template('admin/manage_users.html', users=User
 def delete_user(user_id): 
     user = User.query.get_or_404(user_id) 
     if user.id == current_user.id: return redirect(url_for('manage_users')) 
-    Submission.query.filter_by(user_id=user_id).delete(); db.session.delete(user); db.session.commit(); return redirect(url_for('manage_users')) 
+    Submission.query.filter_by(user_id=user_id).delete();ContestParticipant.query.filter_by(user_id=user_id).delete(); db.session.delete(user); db.session.commit(); return redirect(url_for('manage_users')) 
 
 @app.route('/delete_problem/<int:problem_id>', methods=['POST']) 
 @login_required 
@@ -216,8 +223,18 @@ def delete_contest(contest_id):
 @app.route('/contest/<int:contest_id>') 
 def contest_detail(contest_id): 
     contest = Contest.query.get_or_404(contest_id) 
+    now = datetime.now()
+    contest_ended = contest.end_time <= now
     solvers = dict(db.session.query(Submission.problem_id, func.count(func.distinct(Submission.user_id))).join(User).filter(User.role == 'participant', Submission.status == 'Accepted').group_by(Submission.problem_id).all()) 
-    standings = [{'username': participant.username, 'solved': sum(1 for problem in contest.problems if Submission.query.filter_by(user_id=participant.id, problem_id=problem.id, status='Accepted').count() > 0)} for participant in User.query.filter_by(role='participant').all()] 
+    if contest_ended:
+        if contest.final_standings:
+            standings = contest.final_standings
+        else:
+            standings = [{'username': participant.username, 'solved': sum(1 for problem in contest.problems if Submission.query.filter_by(user_id=participant.id, problem_id=problem.id, status='Accepted').count() > 0)} for participant in User.query.filter_by(role='participant').all()] 
+            contest.final_standings = standings
+            db.session.commit()
+    else:
+         standings = [{'username': participant.username, 'solved': sum(1 for problem in contest.problems if Submission.query.filter_by(user_id=participant.id, problem_id=problem.id, status='Accepted').count() > 0)} for participant in User.query.filter_by(role='participant').all()] 
     return render_template('contest_detail.html', contest=contest, problems=contest.problems, solvers_count=solvers, standings=sorted(standings, key=lambda x: x['solved'], reverse=True)) 
 
 @app.route('/edit_problem/<int:problem_id>', methods=['GET', 'POST']) 
