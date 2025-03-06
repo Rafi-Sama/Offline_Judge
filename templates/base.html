@@ -1,54 +1,145 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Offline Judge</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/theme.css') }}">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Offline Judge</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/theme.css') }}">
 </head>
-<body>
-    <nav class="glass-glow p-4 mx-6 mt-6 flex justify-between items-center">
-        <a href="{{ url_for('index') }}" class="text-2xl neon-text">Offline Judge</a>
-        <div class="space-x-6">
-            <a href="{{ url_for('leaderboard') }}" class="neon-hover">Leaderboard</a>
-            <a href="{{ url_for('get_contests') }}" class="neon-hover">Contests</a>
-            {% if current_user.is_authenticated %}
-                <a href="{{ url_for('problems') }}" class="neon-hover">Problem Set</a>
-                <a href="{{ url_for('submission_history') }}" class="neon-hover">Submissions</a>
-                {% if current_user.role == 'admin' %}<a href="{{ url_for('admin_dashboard') }}" class="text-yellow-400 neon-hover">Admin</a>{% endif %}
-                <a href="{{ url_for('logout') }}" class="text-red-400 neon-hover">Logout</a>
-            {% else %}
-                <a href="{{ url_for('login') }}" class="neon-hover">Login</a>
-                <a href="{{ url_for('register') }}" class="neon-hover">Register</a>
-            {% endif %}
+<body class="relative">
+
+  <!-- Top Navbar: Desktop and Mobile -->
+  <nav class="glass-glow p-4 mx-6 mt-6 flex justify-between items-center">
+    <a href="{{ url_for('index') }}" class="text-2xl neon-text">Offline Judge</a>
+    <div class="hidden lg:flex space-x-6">
+      <a href="{{ url_for('leaderboard') }}" class="neon-hover">Leaderboard</a>
+      <a href="{{ url_for('get_contests') }}" class="neon-hover">Contests</a>
+      {% if current_user.is_authenticated %}
+        <a href="{{ url_for('problems') }}" class="neon-hover">Problem Set</a>
+        <a href="{{ url_for('submission_history') }}" class="neon-hover">Submissions</a>
+        {% if current_user.role == 'admin' %}
+          <a href="{{ url_for('admin_dashboard') }}" class="text-yellow-400 neon-hover">Admin</a>
+        {% endif %}
+        <a href="{{ url_for('logout') }}" class="text-red-400 neon-hover">Logout</a>
+      {% else %}
+        <a href="{{ url_for('login') }}" class="neon-hover">Login</a>
+        <a href="{{ url_for('register') }}" class="neon-hover">Register</a>
+      {% endif %}
+    </div>
+    <button id="open-menu" class="lg:hidden text-white focus:outline-none">☰</button>
+  </nav>
+
+  <!-- Mobile Side Navigation (Right Side) -->
+  <div id="mobile-sidenav" class="fixed inset-0 z-50 flex hidden flex-row-reverse">
+    <div id="side-panel" class="bg-gradient-to-b from-gray-900 to-gray-800 backdrop-blur-md shadow-2xl rounded-l-lg w-1/2 p-6 transform translate-x-full transition-transform duration-300">
+      <div class="flex justify-end">
+        <button id="close-menu" class="text-white text-md mt-5 mr-3">✖</button>
+      </div>
+      <hr class="w-full border-0 h-[2px] bg-gradient-to-r from-transparent via-cyan-400 to-transparent opacity-70 mt-2 animate-pulse" />
+      <div class="flex justify-center mt-4 items-center">
+        <a href="{{ url_for('index') }}" class="text-lg md:text-xl neon-text">Offline Judge</a>
+      </div>
+      <div class="flex items-center mt-2">
+        <div class="flex-1 h-[1px] bg-gray-700 opacity-50"></div>
+        <div class="px-3 text-sm text-gray-400">✦✦✦</div>
+        <div class="flex-1 h-[1px] bg-gray-700 opacity-50"></div>
+      </div>
+      <ul class="mt-6 space-y-4 text-sm md:text-md">
+        <li class="py-2 border-b border-gray-700">
+          <a href="{{ url_for('leaderboard') }}" class="block neon-hover px-4">🏆 Leaderboard</a>
+        </li>
+        <li class="py-2 border-b border-gray-700">
+          <a href="{{ url_for('get_contests') }}" class="block neon-hover px-4">📅 Contests</a>
+        </li>
+        {% if current_user.is_authenticated %}
+          <li class="pt-8 text-gray-400 text-sm px-4">User Menu</li>
+          <li class="py-2 border-b border-gray-700">
+            <a href="{{ url_for('problems') }}" class="block neon-hover px-4">📝 Problem Set</a>
+          </li>
+          <li class="py-2 border-b border-gray-700">
+            <a href="{{ url_for('submission_history') }}" class="block neon-hover px-4">📜 Submissions</a>
+          </li>
+          {% if current_user.role == 'admin' %}
+            <li class="pt-8 text-yellow-400 text-sm px-4">Admin Panel</li>
+            <li class="py-2 border-b border-yellow-600">
+              <a href="{{ url_for('admin_dashboard') }}" class="block text-yellow-400 neon-hover px-4">⚙️ Admin</a>
+            </li>
+          {% endif %}
+          <li class="py-2 border-b border-gray-700">
+            <a href="{{ url_for('logout') }}" class="block text-red-400 neon-hover px-4">🚪 Logout</a>
+          </li>
+        {% else %}
+          <li class="pt-8 text-gray-400 text-sm px-4">Account</li>
+          <li class="py-2 border-b border-gray-700">
+            <a href="{{ url_for('login') }}" class="block neon-hover px-4">🔑 Login</a>
+          </li>
+          <li class="py-2 border-b border-gray-700">
+            <a href="{{ url_for('register') }}" class="block neon-hover px-4">🆕 Register</a>
+          </li>
+        {% endif %}
+      </ul>
+    </div>
+
+    <!-- Semi-transparent Overlay -->
+    <div id="overlay" class="fixed inset-0 w-1/2 bg-black opacity-0 transition-opacity duration-300 hidden"></div>
+
+  </div>
+
+  <!-- Background Particles -->
+  <div class="particles">
+    {% for i in range(25) %}
+      <div style="top: {{ range(5, 95) | random }}%; left: {{ range(5, 95) | random }}%; animation-duration: {{ range(3, 6) | random }}s;"></div>
+    {% endfor %}
+  </div>
+
+  <div class="{% block container_class %}container mx-auto my-6 px-6 {% endblock %}">
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <div class="glass p-3 mt-5 ml-6">
+          {% for category, message in get_flashed_messages(with_categories=True) %}
+            <p class="text-{{ {'success':'green','Accepted':'green','error':'red','Wrong Answer':'red','Runtime Error':'yellow','warning':'yellow','info':'blue'}.get(category, 'pink') }}-400">
+              {{ message }}
+            </p>
+          {% endfor %}
         </div>
-    </nav>
-    
-    <!-- Background Particles -->
-    <div class="particles">
-        {% for i in range(25) %}
-        <div style="top: {{ range(5, 95) | random }}%; left: {{ range(5, 95) | random }}%; animation-duration: {{ range(3, 6) | random }}s;"></div>
-        {% endfor %}
-    </div>
+      {% endif %}
+    {% endwith %}
+    {% block content %}{% endblock %}
+  </div>
 
-    <div class="{% block container_class %}container mx-auto my-6 px-6 {% endblock %}">
-        {% with messages = get_flashed_messages() %}
-            {% if messages %}
-            <div class="glass p-3 mt-5 ml-6">
-                {% for category, message in get_flashed_messages(with_categories=True) %}
-                    <p class="text-{{ {'success':'green','Accepted':'green','error':'red','Wrong Answer':'red','Runtime Error':'yellow','warning':'yellow','info':'blue'}.get(category, 'pink') }}-400">
-                        {{ message }}
-                    </p>
-                {% endfor %}
-            </div>            
-            {% endif %}
-        {% endwith %}
-        {% block content %}{% endblock %}
-    </div>
+  <footer class="text-center py-4 glass mx-6 mt-6">
+    <p class="text-xs text-gray-400 md:text-sm">© 2025 Offline Judge | The Future of Competitive Coding.</p>
+  </footer>
 
-    <footer class="text-center py-4 glass mx-6 mt-6">
-        <p class="text-sm text-gray-400">© 2025 Offline Judge | The Future of Competitive Coding.</p>
-    </footer>
+  <script>
+    const mobileSidenav = document.getElementById('mobile-sidenav');
+    const sidePanel = document.getElementById('side-panel');
+    const openMenu = document.getElementById('open-menu');
+    const closeMenu = document.getElementById('close-menu');
+    const overlay = document.getElementById('overlay');
+
+    openMenu.addEventListener('click', () => {
+        mobileSidenav.classList.remove('hidden');
+        overlay.classList.remove('hidden');
+        setTimeout(() => {
+            overlay.classList.add('opacity-50');
+            sidePanel.classList.remove('translate-x-full');
+        }, 10);
+    });
+
+    const closeSideNav = () => {
+        sidePanel.classList.add('translate-x-full');
+        overlay.classList.remove('opacity-50');
+        setTimeout(() => {
+            mobileSidenav.classList.add('hidden');
+            overlay.classList.add('hidden');
+        }, 300);
+    };
+
+    closeMenu.addEventListener('click', closeSideNav);
+    overlay.addEventListener('click', closeSideNav);
+  </script>
+
 </body>
 </html>

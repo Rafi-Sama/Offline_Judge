@@ -67,6 +67,9 @@ class ProblemHandler(BaseHandler):
     @login_required
     def problem(id):
         p = Problem.query.get_or_404(id)
+        contests_with_problem = Contest.query.filter(Contest.problems.any(Problem.id == id)).all()
+        for contest in contests_with_problem:
+            if contest.start_time > datetime.now(): return redirect(url_for('problems', contest_id=contest.id))
         return render_template('problem.html', problem=p, description=p.description or "Description not available.", sample_test_cases=TestCase.query.filter_by(problem_id=id, is_sample=True).all())
 
     @staticmethod
@@ -243,7 +246,8 @@ class ContestHandler(BaseHandler):
     @app.route('/contest/<int:contest_id>') 
     def contest_detail(contest_id): 
         contest = Contest.query.get_or_404(contest_id)
-        contest_ended = contest.end_time <= datetime.now()
+        if contest.start_time > datetime.now():
+            return redirect(url_for('get_contests'))
         solvers = dict(db.session.query(Submission.problem_id, func.count(func.distinct(Submission.user_id)))
                     .join(User)
                     .filter(User.role == 'participant', Submission.status == 'Accepted')

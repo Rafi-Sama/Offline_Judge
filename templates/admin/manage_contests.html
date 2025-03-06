@@ -1,4 +1,5 @@
-{% extends "base.html" %}  {% block content %}
+{% extends "base.html" %}  
+{% block content %}
 <div class="flex justify-center items-center min-h-[calc(100vh-250px)] py-8 px-4">
     <div class="glass p-6 rounded-lg w-full max-w-3xl shadow-lg border border-gray-700">
         <h1 class="text-2xl font-bold neon-text text-center mb-4">🏆 Manage Contests</h1>
@@ -7,10 +8,10 @@
         <ul class="space-y-4">
             {% for contest in contests %}
             <li class="p-4 rounded-lg bg-gray-900 text-white shadow-md border border-gray-700 hover:shadow-lg hover:border-gray-600 transition">
-                <div class="flex justify-between items-center">
-                    <h2 class="text-lg font-semibold text-blue-400">{{ contest.name }}</h2>
+                <div class="flex justify-between items-center flex-wrap">
+                    <h2 class="text-lg font-semibold text-blue-400 w-full sm:w-auto">{{ contest.name }}</h2>
                     
-                    <div class="flex space-x-2">
+                    <div class="flex space-x-2 mt-2 sm:mt-0">
                         <a href="{{ url_for('manage_problems', contest_id=contest.id) }}" 
                            class="text-white text-sm flex items-center px-3 py-1 rounded-md bg-purple-800 hover:bg-purple-900 transition">
                             ⚙️ Edit Problems
@@ -25,19 +26,23 @@
                         </form>
                     </div>
                 </div>
-                <div>
-                <form method="POST" action="{{ url_for('manage_contests') }}" class="mt-2 flex items-center space-x-2">
+                <div class="mt-4">
+                <form method="POST" action="{{ url_for('manage_contests') }}" class="flex flex-wrap items-center justify-between space-y-4 sm:space-y-0 sm:space-x-4">
                     <input type="hidden" name="contest_id" value="{{ contest.id }}">
 
-                    <label class="label">📅 Start</label>
-                    <input type="datetime-local" name="start_time" value="{{ contest.start_time.strftime('%Y-%m-%dT%H:%M') }}" 
-                           class="input-field px-1 py-0 w-52" />
-                    
-                    <label class="label">⏳ End</label>
-                    <input type="datetime-local" name="end_time" value="{{ contest.end_time.strftime('%Y-%m-%dT%H:%M') }}" 
-                           class="input-field px-1 py-0 w-52" />
+                    <div class="flex flex-col sm:flex-row items-start sm:items-center space-y-2 sm:space-y-0">
+                        <label class="label w-full sm:w-auto">📅 Start</label>
+                        <input type="datetime-local" name="start_time" value="{{ contest.start_time.strftime('%Y-%m-%dT%H:%M') }}" 
+                               class="input-field px-1 py-0 w-full sm:w-52" />
+                    </div>
 
-                    <button type="submit" class="py-2 px-3 bg-cyan-600 hover:bg-cyan-700 text-white text-sm font-bold rounded-md shadow transition">
+                    <div class="flex flex-col sm:flex-row items-start sm:items-center space-y-2 sm:space-y-0">
+                        <label class="label w-full sm:w-auto">⏳ End</label>
+                        <input type="datetime-local" name="end_time" value="{{ contest.end_time.strftime('%Y-%m-%dT%H:%M') }}" 
+                               class="input-field px-1 py-0 w-full sm:w-52" />
+                    </div>
+
+                    <button type="submit" class="py-2 px-3 bg-cyan-600 hover:bg-cyan-700 text-white text-sm font-bold rounded-md shadow transition w-full sm:w-auto">
                         💾 Save
                     </button>
                 </form>
@@ -51,7 +56,9 @@
             <a href="{{ url_for('add_contest') }}" class="text-cyan-400 hover:text-cyan-300">Create one now!</a>
         </p>
         {% endif %}
-        <a href="{{ url_for('admin_dashboard') }}" class="block mt-6 p-4 rounded-lg bg-gray-700 hover:bg-gray-800 text-white font-bold text-center shadow-md">🔙 Back to Dashboard</a>
+        <a href="{{ url_for('admin_dashboard') }}" class="block mt-6 p-4 rounded-lg bg-gray-700 hover:bg-gray-800 text-white font-bold text-center shadow-md">
+            🔙 Back to Dashboard
+        </a>
     </div>
 </div>
 {% endblock %}
