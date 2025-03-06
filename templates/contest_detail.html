@@ -17,7 +17,7 @@
                     <ul class="list-disc list-inside text-gray-300">
                         {% for problem in problems %}
                             <li class="flex justify-between">
-                                <a href="{{ url_for('problem', id=problem.id) }}" class="text-blue-400">{{ problem.title }}</a>
+                                <a href="{{ url_for('problem', id=problem.id) }}" class="text-gray-100 text-xl hover:text-green-500 ">{{ problem.title }}</a>
                                 <p class="text-sm text-gray-500">🛠️ Solved: {{ solvers_count.get(problem.id, 0) }} times</p>
                             </li>
                         {% else %}

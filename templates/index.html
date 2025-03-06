@@ -8,11 +8,11 @@
     <!-- Buttons -->
     <div class="mt-8 flex flex-wrap gap-4 items-center justify-center">
         {% if not current_user.is_authenticated %}
-            <a href="{{ url_for('login') }}" class="neon-button floating">Login</a>
-            <a href="{{ url_for('register') }}" class="neon-button floating bg-pink-500 hover:bg-pink-600">Register</a>
+            <a href="{{ url_for('login') }}" class="neon-button transition-transform transform  hover:scale-105">Login</a>
+            <a href="{{ url_for('register') }}" class="neon-button transition-transform transform text-gray-900 hover:scale-105">Register</a>
         {% else %}
-            <a href="{{ url_for('problems') }}" class="neon-button floating bg-purple-500 hover:bg-purple-600 text-sm md:text-md">Solve Problems</a>
-            <a href="{{ url_for('leaderboard') }}" class="neon-button floating bg-yellow-500 hover:bg-yellow-600 text-gray-900 text-sm md:text-md">Leaderboard</a>
+            <a href="{{ url_for('problems') }}" class="neon-button  transition-transform transform hover:scale-105 text-gray-900 text-sm md:text-md">Solve Problems</a>
+            <a href="{{ url_for('leaderboard') }}" class="neon-button  transition-transform transform hover:scale-105 text-gray-900 text-sm md:text-md">Leaderboard</a>
         {% endif %}
     </div>
 

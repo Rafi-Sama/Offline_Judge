@@ -10,7 +10,6 @@
 .glass { background: rgba(255, 255, 255, 0.1); border-radius: 15px; backdrop-filter: blur(20px); box-shadow: 0 0 20px rgba(0, 224, 255, 0.15); padding: 16px; border: 1px solid rgba(255, 255, 255, 0.2); }
 .neon-text { font-family: 'Orbitron', sans-serif; font-weight: 700; text-shadow: 0 0 8px rgba(0, 224, 255, 0.6); }
 .neon-button { font-family: 'Orbitron', sans-serif; padding: 12px 24px; border-radius: 8px; transition: 0.3s; background: linear-gradient(135deg, #00e0ff, #0095ff); color: #0d0d2b; font-weight: 600; box-shadow: 0 0 12px rgba(0, 224, 255, 0.6); }
-.neon-button:hover { transform: translateY(-3px); box-shadow: 0 0 20px rgba(0, 224, 255, 0.9); }
 .neon-hover { transition: 0.3s; } .neon-hover:hover { color: #00e0ff; text-shadow: 0 0 8px rgba(0, 224, 255, 0.7); }
 .glow-border { border: 1px solid rgba(0, 224, 255, 0.4); box-shadow: 0 0 12px rgba(0, 224, 255, 0.3); }
 
@@ -40,8 +39,8 @@ body{background:radial-gradient(circle at center,#0a0a0a,#000);background-size:4
 /* Neon gradient button with a glowing effect */
 @keyframes gradient-shift{0%{background-position:0% 50%}100%{background-position:100% 50%}}
 .neon-button{display:inline-block;padding:14px 32px;font-size:1.2rem;font-weight:bold;border-radius:8px;text-transform:uppercase;position:relative;overflow:hidden;letter-spacing:1px;color:white;text-shadow:0 0 8px rgba(255,255,255,0.8);box-shadow:0 0 15px rgba(0,255,255,0.6);background-size:200% 200%;background-image:linear-gradient(90deg,#00c9ff,#3b82f6,#ff00ff);animation:gradient-shift 3s infinite alternate ease-in-out;transition:transform 0.3s ease,box-shadow 0.3s ease}
-.neon-button:hover{transform:scale(1.1);box-shadow:0 0 25px rgba(0,255,255,1)}
-.neon-button:active{transform:scale(1.05);box-shadow:0 0 30px rgba(0,255,255,1)}
+.neon-button:hover{transform:scale(1.05);box-shadow:0 0 10px rgb(13, 77, 77)}
+.neon-button:active{transform:scale(1.05);box-shadow:0 0 20px rgb(6, 90, 90)}
 
 /* Smooth fade-in effect for elements appearing on load */
 @keyframes fade-in{from{opacity:0;transform:translateY(15px)}to{opacity:1;transform:translateY(0)}}

@@ -68,9 +68,21 @@ class ProblemHandler(BaseHandler):
     def problem(id):
         p = Problem.query.get_or_404(id)
         contests_with_problem = Contest.query.filter(Contest.problems.any(Problem.id == id)).all()
+        problems = []
         for contest in contests_with_problem:
+            problems.extend(contest.problems)
+        solvers = dict(db.session.query(Submission.problem_id, func.count(func.distinct(Submission.user_id)))
+                    .join(User)
+                    .filter(User.role == 'participant', Submission.status == 'Accepted')
+                    .group_by(Submission.problem_id)
+                    .all())
+        start_time, end_time = None, None
+        for contest in contests_with_problem:
+            if contest.start_time:
+                start_time = contest.start_time
+                end_time = contest.end_time
             if contest.start_time > datetime.now(): return redirect(url_for('problems', contest_id=contest.id))
-        return render_template('problem.html', problem=p, description=p.description or "Description not available.", sample_test_cases=TestCase.query.filter_by(problem_id=id, is_sample=True).all())
+        return render_template('problem.html', problem=p, description=p.description or "Description not available.", sample_test_cases=TestCase.query.filter_by(problem_id=id, is_sample=True).all(),problems=problems,solvers_count=solvers,start_time=start_time,end_time=end_time)
 
     @staticmethod
     @login_required
