@@ -39,7 +39,7 @@
                     </td>
                     <td class="py-3 px-4 text-center">
                         <button class="neon-button text-xs sm:text-sm px-3 py-1 rounded-lg transition hover:scale-105" 
-                            onclick="openModal({{ sub.id }}, `{{ sub.code|e }}`, `{{ sub.language }}`)">
+                            onclick="openModal(`{{ sub.id }}`, String.raw`{{ sub.code }}`, `{{ sub.language }}`)">
                             View
                         </button>
                     </td>
