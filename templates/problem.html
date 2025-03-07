@@ -59,8 +59,8 @@
 
     <div class="flex justify-center items-center max-h-4xl w-full">
         <div class="glass p-8 rounded-lg w-full max-w-4xl shadow-lg min-h-[calc(100vh-250px)]">
-            {% if problems %}
             <p id="contest-end-timer" class="text-red-500 font-semibold mb-2 text-end mt-[-15px]"><span id="countdown-timer">Calculating...</span></p>
+            {% if problems %}
             <div class="mb-3">
                 <ul class="flex flex-wrap gap-2">
                     {% for problem in problems %}
@@ -199,7 +199,11 @@
         // Remove the textarea from the DOM
         document.body.removeChild(textArea);
     }
-    const contestEndTime = new Date("{{ end_time.strftime('%Y-%m-%dT%H:%M:%S') }}").getTime();
+    {% if end_time %}
+        const contestEndTime = new Date("{{ end_time.strftime('%Y-%m-%dT%H:%M:%S') }}").getTime();
+    {% else %}
+        const contestEndTime = Date.now() + 20 * 60 * 1000; // Default to 20 minutes later
+    {% endif %}
     const countdownTimer = document.getElementById('countdown-timer');
     const contestEndTimer = document.getElementById('contest-end-timer');
 
