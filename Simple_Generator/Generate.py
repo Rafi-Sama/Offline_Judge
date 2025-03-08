@@ -60,7 +60,8 @@ def run_code(correct_code_file, input_data):
     else:
         print("Unsupported file type.")
         return ""
-
+    
+# Modify these variables as needed
 min_val = 1     
 max_val = 100   
 input_count = 3
