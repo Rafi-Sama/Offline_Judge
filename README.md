@@ -31,7 +31,7 @@
 ### Requirements
 
 - Install and setup the python and cpp compilers (MINGW)
-- No internet is required but all participent pc and host must be connected to the same network or router
+- No internet is required but all participent and host must be connected to the same network or router
 
 ### On Windows
 
@@ -42,9 +42,9 @@
 ## FAQ
 
 <details>
-  <summary>Keeps Loading and not able to access the hosted network</summary>
+  <summary>Keeps Loading and unable to access the hosted network</summary>
 
-> Run this in cmd with administrative power `netsh advfirewall set allprofiles state off`, this will turn of your firewall which might be blocking the networks
+> Run this in hosts cmd with administrative power `netsh advfirewall set allprofiles state off`, this will turn of your firewall which might be blocking the networks
 
 > Re-running the file should work.
 
@@ -52,4 +52,4 @@
 
 ## Support for more features
 
-**_Disclaimer_**: \_the owner or the programmers or any content of this repository hold no responsibility for any kind of data loss or modification on your system and do not warrenty for such actions. I tried my best to prevent all sorts of ways (that I am currently aware of) to prevent data loss or unwanted data modification.
+**_Disclaimer_**: _the owner or the programmers or any content of this repository hold no responsibility for any kind of data loss or modification on your system and do not warrenty for such actions. I tried my best to prevent all sorts of ways (that I am currently aware of) to prevent data loss or unwanted data modification._
