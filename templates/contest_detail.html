@@ -1,4 +1,5 @@
-{% extends "base.html" %}  {% block content %}
+{% extends "base.html" %}
+{% block content %}
 <div class="flex justify-center items-center min-h-[calc(100vh-250px)] px-4">
     <div class="glass p-8 rounded-xl max-w-4xl w-full shadow-2xl">
         <h1 class="text-4xl font-bold neon-text text-center mb-8">{{ contest.name }}</h1>
@@ -6,9 +7,9 @@
         <div class="flex flex-col md:flex-row gap-8">
             <div class="md:w-2/3 space-y-8">
                 <div class="bg-gray-900 p-6 rounded-xl shadow-md hover:shadow-lg transition">
-                    <p class="text-gray-300 text-lg">📝 {{ contest.description }}</p>
                     <p class="text-sm text-gray-500 mt-3">⏳ Start: {{ contest.start_time.strftime('%Y-%m-%d %H:%M:%S') }}</p>
                     <p class="text-sm text-gray-500">🏁 End: {{ contest.end_time.strftime('%Y-%m-%d %H:%M:%S') }}</p>
+                    <p id="contest-end-timer" class="text-red-500 font-semibold mt-3">Ending in: <span id="countdown-timer">Calculating...</span></p>
                 </div>
 
                 <div class="bg-gray-900 p-6 rounded-xl shadow-md hover:shadow-lg transition">
@@ -16,7 +17,7 @@
                     <ul class="list-disc list-inside text-gray-300">
                         {% for problem in problems %}
                             <li class="flex justify-between">
-                                <a href="{{ url_for('problem', id=problem.id) }}" class="text-blue-400">{{ problem.title }}</a>
+                                <a href="{{ url_for('problem', id=problem.id) }}" class="text-gray-100 text-xl hover:text-green-500 ">{{ problem.title }}</a>
                                 <p class="text-sm text-gray-500">🛠️ Solved: {{ solvers_count.get(problem.id, 0) }} times</p>
                             </li>
                         {% else %}
@@ -43,4 +44,39 @@
         </div>
     </div>
 </div>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    // Contest end time countdown
+    const contestEndTime = new Date("{{ contest.end_time.strftime('%Y-%m-%dT%H:%M:%S') }}").getTime();
+    const countdownTimer = document.getElementById('countdown-timer');
+    const contestEndTimer = document.getElementById('contest-end-timer');
+
+    const updateCountdown = () => {
+        const currentTime = Date.now();
+        const timeLeft = contestEndTime - currentTime;
+
+        if (timeLeft > 0) {
+            const h = Math.floor(timeLeft / 3600000);
+            const m = Math.floor((timeLeft % 3600000) / 60000);
+            const s = Math.floor((timeLeft % 60000) / 1000);
+            countdownTimer.innerText = `${h}h ${m}m ${s}s`;
+        } else {
+            countdownTimer.innerText = "Contest Ended!";
+            contestEndTimer.classList.add("text-green-500");
+            contestEndTimer.innerText = "The contest has ended!";
+            clearInterval(countdownInterval);
+            if(timeLeft == 0) {
+            setTimeout(() => {
+                window.location.reload(); // Reload the page
+            }, 1000);
+        }
+        }
+    };
+
+    const countdownInterval = setInterval(updateCountdown, 1000);
+    updateCountdown(); // Call once immediately to avoid delay
+});
+</script>
+
 {% endblock %}

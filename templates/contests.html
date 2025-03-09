@@ -1,16 +1,17 @@
-{% extends "base.html" %}  {% block content %}
+{% extends "base.html" %}  
+{% block content %}
 <div class="flex justify-center items-center min-h-[calc(100vh-250px)] w-full ">
     <div class="glass p-8 rounded-lg max-w-4xl w-full shadow-xl backdrop-blur-md glow-border">
         <h1 class="text-4xl font-extrabold neon-text text-center mb-6">🏆 Contests</h1>
 
         {% set sections = [
-            ('🔥 Ongoing Contests', ongoing_contests, 'Ends', 'end_time'),
-            ('⏳ Upcoming Contests', upcoming_contests, 'Starts', 'start_time'),
-            ('📅 Past Contests', past_contests, 'Ended', 'end_time')
+            ('🔥 Ongoing Contests', ongoing_contests, 'Ends', 'end_time', 'end_time'),
+            ('⏳ Upcoming Contests', upcoming_contests, 'Starts', 'start_time', 'start_time'),
+            ('📅 Past Contests', past_contests, 'Ended', 'end_time', 'end_time')
         ] %}
 
         <div class="space-y-6">
-            {% for title, contests, label, time_attr in sections %}
+            {% for title, contests, label, time_attr, timer_type in sections %}
             <div>
                 <h2 class="text-2xl font-bold text-cyan-400 mb-4">{{ title }}</h2>
                 {% if contests %}
@@ -19,8 +20,10 @@
                         <div>
                             <p class="text-xl font-semibold text-gray-200">{{ contest.name }}</p>
                             <p class="text-sm text-gray-400 mt-1">🕒 {{ label }}: {{ contest[time_attr].strftime('%Y-%m-%d %H:%M:%S') }}</p>
-                            {% if contest in upcoming_contests %}
-                                <p class="text-sm text-yellow-400 countdown" data-start="{{ contest.start_time.timestamp() }}"></p>
+                            {% if timer_type == 'start_time' and contest in upcoming_contests %}
+                                <p class="text-sm text-yellow-400 countdown-start" data-start="{{ contest.start_time.timestamp() }}"></p>
+                            {% elif timer_type == 'end_time' and contest in ongoing_contests %}
+                                <p class="text-sm text-red-400 countdown-end" data-end="{{ contest.end_time.timestamp() }}"></p>
                             {% endif %}
                         </div>
                         <div>
@@ -28,7 +31,7 @@
                                 {% if contest.id in user_participations %}
                                     {% if contest in upcoming_contests %}
                                         <p class="text-green-400 font-semibold">Registered</p>
-                                    {% elif contest in ongoing_contests %}
+                                    {% elif contest in ongoing_contests or past_contests %}
                                         <a href="{{ url_for('contest_detail', contest_id=contest.id) }}" class="bg-green-500 px-4 py-2 rounded-lg font-semibold hover:bg-green-600 enter-button">Enter</a>
                                     {% endif %}
                                 {% else %}
@@ -53,12 +56,13 @@
 
 <script>
 document.addEventListener("DOMContentLoaded", () => {
-    document.querySelectorAll(".countdown").forEach(el => {
+    // Countdown for contest start
+    document.querySelectorAll(".countdown-start").forEach(el => {
         let startTime = el.dataset.start * 1000;
         let contestItem = el.closest(".contest-item");
         let enterButton = contestItem?.querySelector(".enter-button");
 
-        let updateCountdown = () => {
+        let updateStartCountdown = () => {
             let timeLeft = startTime - Date.now();
             if (timeLeft > 0) {
                 let h = Math.floor(timeLeft / 3600000),
@@ -67,13 +71,36 @@ document.addEventListener("DOMContentLoaded", () => {
                 el.innerText = `Starts in: ${h}h ${m}m ${s}s`;
             } else {
                 el.innerText = "Contest Started!";
+                setTimeout(() => { window.location.reload(); }, 1000);
                 clearInterval(interval);
                 if (enterButton) setTimeout(() => window.location.href = enterButton.href, 1000);
             }
         };
 
-        let interval = setInterval(updateCountdown, 1000);
-        updateCountdown();
+        let interval = setInterval(updateStartCountdown, 1000);
+        updateStartCountdown();
+    });
+
+    // Countdown for contest end
+    document.querySelectorAll(".countdown-end").forEach(el => {
+        let endTime = el.dataset.end * 1000;
+        let contestItem = el.closest(".contest-item");
+
+        let updateEndCountdown = () => {
+            let timeLeft = endTime - Date.now();
+            if (timeLeft > 0) {
+                let h = Math.floor(timeLeft / 3600000),
+                    m = Math.floor((timeLeft % 3600000) / 60000),
+                    s = Math.floor((timeLeft % 60000) / 1000);
+                el.innerText = `Ends in: ${h}h ${m}m ${s}s`;
+            } else {
+                el.innerText = "Contest Ended!";
+                clearInterval(interval);
+            }
+        };
+
+        let interval = setInterval(updateEndCountdown, 1000);
+        updateEndCountdown();
     });
 });
 </script>

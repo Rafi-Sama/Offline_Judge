@@ -15,8 +15,18 @@
             </button>
         </form>
         <p class="mt-4 text-center text-gray-400">
-            Don't have an account? <a href="{{ url_for('register') }}" class="neon-hover">Register</a>
+            Don't have an account? <a href="{{ url_for('register') }}" class="neon-hover underline">Register</a>
         </p>
+        <p class="text-start ml-8 text-gray-400">
+            <a href="" class="neon-hover underline" id="forgot">Forgot Password ??</a>
+        </p>
+        <p class="text-center mt-2 hidden text-blue-600" id="forgot-container">Why you forget it man ?? 🗿</p>
     </div>
 </div>
+<script>
+    document.getElementById('forgot').addEventListener('click', function (e) {
+        e.preventDefault();
+        document.getElementById('forgot-container').classList.remove('hidden');
+    });
+</script>
 {% endblock %}

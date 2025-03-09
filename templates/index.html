@@ -2,39 +2,56 @@
 <!-- Main Section -->
 <div class="flex flex-col items-center justify-center min-h-[calc(100vh-250px)] px-4 text-center">
     <!-- Welcome Section -->
-    <h1 class="text-6xl font-extrabold glitch-text">Welcome to Offline Judge</h1>
-    <p class="mt-4 text-lg text-gray-300">Push your limits in a hyper-intelligent coding arena.</p>
+    <h1 class="text-5xl md:text-6xl font-extrabold glitch-text">Welcome to Offline Judge</h1>
+    <p class="mt-4 text-md md:text-lg text-gray-300">Push your limits in a hyper-intelligent coding arena.</p>
 
     <!-- Buttons -->
-    <div class="mt-8 flex flex-wrap gap-4">
+    <div class="mt-8 flex flex-wrap gap-4 items-center justify-center">
         {% if not current_user.is_authenticated %}
-            <a href="{{ url_for('login') }}" class="neon-button floating">Login</a>
-            <a href="{{ url_for('register') }}" class="neon-button floating bg-pink-500 hover:bg-pink-600">Register</a>
+            <a href="{{ url_for('login') }}" class="neon-button transition-transform transform  hover:scale-105">Login</a>
+            <a href="{{ url_for('register') }}" class="neon-button transition-transform transform text-gray-900 hover:scale-105">Register</a>
         {% else %}
-            <a href="{{ url_for('problems') }}" class="neon-button floating bg-purple-500 hover:bg-purple-600">Solve Problems</a>
-            <a href="{{ url_for('leaderboard') }}" class="neon-button floating bg-yellow-500 hover:bg-yellow-600 text-gray-900">Leaderboard</a>
+            <a href="{{ url_for('problems') }}" class="neon-button  transition-transform transform hover:scale-105 text-gray-900 text-sm md:text-md">Solve Problems</a>
+            <a href="{{ url_for('leaderboard') }}" class="neon-button  transition-transform transform hover:scale-105 text-gray-900 text-sm md:text-md">Leaderboard</a>
         {% endif %}
     </div>
 
     <!-- Why Choose Offline Judge Section -->
-    <div class="mt-16 max-w-3xl w-full glass-card shadow-lg relative floating">
+    <div class="mt-16 max-w-3xl w-full glass-card shadow-lg relative">
         <!-- Shine Effect -->
         <div class="shine-effect"></div>
 
         <h2 class="text-3xl font-semibold text-white mb-4">🚀 Why Choose Offline Judge?</h2>
-        <ul class="text-gray-300 space-y-2">
-            {% set features = [
-                ('⚡', 'Ultra-Fast Execution Engine'),
-                ('🧠', 'AI-Powered Code Analysis'),
-                ('🌎', 'Global Leaderboards & Rankings'),
-                ('🔒', 'Secure & Private Environment')
-            ] %}
-            {% for icon, text in features %}
-                <li class="flex items-center gap-2 animate-fade-in" style="animation-delay: {{ loop.index * 0.3 }}s;">
-                    <span class="text-blue-400">{{ icon }}</span> <span>{{ text }}</span>
-                </li>
-            {% endfor %}
-        </ul>
+<div class="flex justify-between gap-2">
+    <ul class="text-gray-300 space-y-2">
+        {% set features = [
+            ('⚡', 'Ultra-Fast Execution Engine'),
+            ('🧠', 'AI-Powered Code Analysis'),
+            ('🌎', 'Global Leaderboards & Rankings'),
+            ('🔒', 'Secure & Private Environment')
+        ] %}
+        {% for icon, text in features %}
+            <li class="flex items-center gap-2 animate-fade-in" style="animation-delay: {{ loop.index * 0.3 }}s;">
+                <span class="text-blue-400">{{ icon }}</span> <span>{{ text }}</span>
+            </li>
+        {% endfor %}
+    </ul>
+
+    <ul class="text-gray-300 space-y-2 mr-3">
+        {% set additional_features = [
+            ('🚀', 'Fastest Compilation Times'),
+            ('📈', 'Real-Time Analytics for Users'),
+            ('💻', 'Cross-Platform Support for All Devices'),
+            ('🌟', 'Personalized User Experience')
+        ] %}
+        {% for icon, text in additional_features %}
+            <li class="flex items-center gap-2 animate-fade-in" style="animation-delay: {{ loop.index * 0.3 }}s;">
+                <span class="text-blue-400">{{ icon }}</span> <span>{{ text }}</span>
+            </li>
+        {% endfor %}
+    </ul>
+</div>
+
     </div>
 </div>
 {% endblock %}
