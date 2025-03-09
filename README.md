@@ -13,11 +13,13 @@
 ### CHECK [FAQ](#faq) FOR FUTURE HELP AND ISSUE FIX
 
 ## You are welcome to Contribute to this (also open for ideas)
-<!-- 
+
+<!--
 ## Feel Free to Support Me
 
-<a href="https://www.buymeacoffee.com/RafiSama" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" style="height: 60px !important;width: 217px !important;" ></a>  
+<a href="https://www.buymeacoffee.com/RafiSama" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" style="height: 60px !important;width: 217px !important;" ></a>
 -->
+
 ## Basic FEATURES
 
 - ProblemSet
@@ -37,7 +39,7 @@
 
 ## Quick Tutorial
 
-<!-- https://github.com/Rafi-Sama/Offline_Judge/assets/ -->
+https://github.com/Rafi-Sama/Offline_Judge/static/assets/tutorial.mp4
 
 ## FAQ
 
