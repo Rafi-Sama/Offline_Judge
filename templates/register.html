@@ -42,10 +42,10 @@
         toggleError("password", /^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{8,}$/);
     }
     function validateConfirmPassword() {
-        const password = document.getElementById("password").value;
-        const confirmPassword = document.getElementById("confirm_password").value;
-        toggleError("confirm_password", password === confirmPassword ? /.+/ : /$/);
-    }
+    const password = document.getElementById("password").value;
+    const confirmPassword = document.getElementById("confirm_password").value;
+    toggleError("confirm_password", password === confirmPassword);
+}
     function toggleError(field, condition) {
         const input = document.getElementById(field);
         const error = document.getElementById(`${field}-error`);

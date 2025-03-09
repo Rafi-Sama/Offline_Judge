@@ -1,4 +1,5 @@
-{% extends "base.html" %}  {% block content %}
+{% extends "base.html" %}  
+{% block content %}
 <div class="text-center mt-16 min-h-[calc(100vh-274px)]">
     <h1 class="text-4xl font-extrabold neon-text">📜 Submission History</h1>
 
@@ -10,35 +11,35 @@
         </label>
     </div>
 
-    <div class="mt-8 mx-auto w-11/12 lg:w-3/4 glass p-6 glow-border overflow-x-auto rounded-lg shadow-lg">
-        <table class="w-full text-gray-300 border-collapse">
+    <div class="mt-8 mx-auto max-w-6xl glass p-6 glow-border overflow-x-auto rounded-lg shadow-lg">
+        <table class="w-full text-gray-300 border-collapse overflow-x-auto">
             <thead class="text-cyan-400 border-b-2 border-cyan-500 bg-gray-900">
-                <tr class="text-lg">
+                <tr class="text-sm sm:text-lg">
                     {% for col in ["ID", "User", "Time", "Problem", "Lang", "Status", "Code"] %}
-                        <th class="py-3">{{ col }}</th>
+                        <th class="py-3 px-4 text-center">{{ col }}</th>
                     {% endfor %}
                 </tr>
             </thead>
             <tbody>
                 {% for sub in submissions %}
                 <tr class="border-b border-gray-700 hover:bg-gray-800 transition duration-200">
-                    <td class="py-3 px-4 text-center">{{ sub.id }}</td>
-                    <td class="py-3 px-4 text-center">{{ sub.user.username }}</td>
-                    <td class="py-3 px-4 text-center">{{ sub.timestamp.strftime('%Y-%m-%d %H:%M:%S') }}</td>
-                    <td class="py-3 px-4 text-center">
+                    <td class="py-3 px-4 text-center text-sm sm:text-base">{{ sub.id }}</td>
+                    <td class="py-3 px-4 text-center text-sm sm:text-base">{{ sub.user.username }}</td>
+                    <td class="py-3 px-4 text-center text-sm sm:text-base truncate max-w-xs sm:max-w-full">{{ sub.timestamp.strftime('%Y-%m-%d %H:%M:%S') }} (UTC)</td>
+                    <td class="py-3 px-4 text-center text-sm sm:text-base">
                         <a href="{{ url_for('problem', id=sub.problem.id) }}" class="text-blue-400 hover:underline font-medium">
                             {{ sub.problem.title }}
                         </a>
                     </td>
-                    <td class="py-3 px-4 text-center">{{ sub.language }}</td>
-                    <td class="py-3 px-4 text-center">
-                        <span class="px-2 py-1 text-sm rounded-md bg-{{ 'green' if sub.status == 'Accepted' else 'red' }}-600 text-{{ 'green' if sub.status == 'Accepted' else 'red' }}-200 shadow-md">
+                    <td class="py-3 px-4 text-center text-sm sm:text-base">{{ sub.language }}</td>
+                    <td class="py-3 px-4 text-center text-sm sm:text-base">
+                        <span class="px-2 py-1 text-xs sm:text-sm rounded-md bg-{{ 'green' if sub.status == 'Accepted' else 'red' }}-600 text-{{ 'green' if sub.status == 'Accepted' else 'red' }}-200 shadow-md">
                             {{ sub.status }}
                         </span>
                     </td>
                     <td class="py-3 px-4 text-center">
-                        <button class="neon-button text-xs px-3 py-1 rounded-lg transition hover:scale-105" 
-                            onclick="openModal({{ sub.id }}, `{{ sub.code|escape }}`, `{{ sub.language }}`)">
+                        <button class="neon-button text-xs sm:text-sm px-3 py-1 rounded-lg transition hover:scale-105" 
+                            onclick="openModal(`{{ sub.id }}`, String.raw`{{ sub.code }}`, `{{ sub.language }}`)">
                             View
                         </button>
                     </td>
@@ -46,6 +47,7 @@
                 {% endfor %}
             </tbody>
         </table>
+        
     </div>
 </div>
 
@@ -71,6 +73,7 @@
 
     function openModal(id, code, lang) {
         document.getElementById("modalTitle").textContent = `Submission #${id} (${lang})`;
+        // Set code inside <pre> tag for preserving formatting
         document.getElementById("modalCode").textContent = code;
         document.getElementById("codeModal").classList.remove("hidden");
     }
@@ -80,11 +83,41 @@
     }
 
     function copyCode() {
-        navigator.clipboard.writeText(document.getElementById("modalCode").textContent).then(() => {
-            let confirmation = document.getElementById("copyConfirmation");
-            confirmation.classList.remove("hidden");
-            setTimeout(() => confirmation.classList.add("hidden"), 1500);
-        });
+        const modalCodeElement = document.getElementById("modalCode");
+        const codeText = modalCodeElement.textContent;
+
+        // Modern approach: Clipboard API (works in secure contexts)
+        if (navigator.clipboard) {
+            navigator.clipboard.writeText(codeText).then(() => {
+                showCopyConfirmation();
+            }).catch((error) => {
+                console.error("Clipboard write failed", error);
+                fallbackCopyCode(codeText);
+            });
+        } else {
+            // Fallback for browsers that don't support the Clipboard API
+            fallbackCopyCode(codeText);
+        }
+    }
+
+    function fallbackCopyCode(text) {
+        const textArea = document.createElement("textarea");
+        textArea.value = text;
+        document.body.appendChild(textArea);
+        textArea.select();
+        try {
+            document.execCommand('copy');
+            showCopyConfirmation();
+        } catch (error) {
+            console.error("Fallback copy failed", error);
+        }
+        document.body.removeChild(textArea);
+    }
+
+    function showCopyConfirmation() {
+        const confirmation = document.getElementById("copyConfirmation");
+        confirmation.classList.remove("hidden");
+        setTimeout(() => confirmation.classList.add("hidden"), 1500);
     }
 </script>
 {% endblock %}

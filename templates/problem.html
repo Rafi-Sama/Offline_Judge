@@ -1,7 +1,11 @@
-{% extends "base.html" %}  {% block content %}
-<div class="flex flex-col justify-center items-center min-h-[calc(100vh-250px)] gap-6">
-    <div class="glass p-8 rounded-lg w-full max-w-2xl shadow-lg">
-        <h1 class="text-3xl font-bold neon-text text-center mb-6">{{ problem.title }}</h1>
+{% extends "base.html" %}
+{% block container_class %}
+    <!-- No container class here -->
+{% endblock %}
+{% block content %}
+<div class="flex justify-center items-start min-h-[calc(100vh-250px)] gap-6 min-w-[calc(100vw)] mx-auto my-6 px-6">
+    <div class="glass p-8 rounded-lg w-full max-w-5xl shadow-lg min-h-[calc(100vh-250px)]">
+        <h1 class="text-3xl font-bold neon-text text-center mb-6 whitespace-pre-line">{{ problem.title }}</h1>
         <p class="text-gray-300 mb-6 whitespace-pre-line">{{ description }}</p>
 
         <p class="text-gray-300 font-semibold">Difficulty: 
@@ -25,36 +29,78 @@
 
         {% if sample_test_cases %}
         <h2 class="text-2xl font-semibold text-gray-300 mt-6">Sample Test Cases</h2>
-        <div class="mt-4">
-            {% for test in sample_test_cases %}
-                <div>
-                    <p>Input: {{ test.input_data }}</p>
-                    <p>Output: {{ test.output_data }}</p>
-                </div>
-            {% endfor %}
+<div class="mt-4">
+    {% for test in sample_test_cases %}
+        <div class="mb-4">
+            <label class="text-gray-300">Test Input</label>
+            <div class="relative">
+                <pre id="input-{{ test.id }}" class="w-full p-3 rounded-lg bg-gray-900 text-gray-300 border border-gray-700">{{ test.input_data }}</pre>
+                <button onclick="copyToClipboard('input-{{ test.id }}')" 
+                        class="absolute top-2 right-2 px-3 py-1 text-white rounded-md hover:bg-blue-600 transition">
+                        📋 
+                </button>
+            </div>
+            
+            <label class="text-gray-300">Expected Output</label>
+            <div class="relative">
+                <pre id="output-{{ test.id }}" class="w-full p-3 rounded-lg bg-gray-900 text-gray-300 border border-gray-700">{{ test.output_data }}</pre>
+                <button onclick="copyToClipboard('output-{{ test.id }}')" 
+                        class="absolute top-2 right-2 px-3 py-1 text-white rounded-md hover:bg-blue-600 transition">
+                        📋 
+                </button>
+            </div>
         </div>
+    {% endfor %}
+</div>
         {% else %}
             <p>No Sample Test Cases Found.</p>
         {% endif %}
     </div>
 
-    <div class="flex justify-center items-center">
-        <div class="glass p-8 rounded-lg w-full max-w-3xl shadow-lg">
-            <h1 class="text-3xl font-bold neon-text text-center mb-6">Submit Solution for {{ problem.title }}</h1>
-            <form method="POST" class="space-y-6">
-                <label for="language" class="text-gray-300 font-semibold">Choose Language:</label>
-                <select name="language" id="language"
-                    class="w-full p-3 rounded-lg bg-gray-900 text-gray-300 border border-gray-700 focus:ring-2 focus:ring-pink-500 transition">
-                    {% for lang in ["cpp", "c", "python"] %}
-                    <option value="{{ lang }}" {% if lang == "cpp" %}selected{% endif %}>
-                        {{ lang.upper() }}
-                    </option>
+    <div class="flex justify-center items-center max-h-4xl w-full">
+        <div class="glass p-8 rounded-lg w-full max-w-4xl shadow-lg min-h-[calc(100vh-250px)]">
+            <div class="flex gap-4 mb-2 mt-[-15px] items-start justify-end">
+                {% if problems %}
+                <a href="{{ url_for('contest_detail', contest_id=contest_id) }}" class="glass py-1 px-2 mt-[-5px]">🏆 Leaderboard</a>
+                {% endif %}
+                <p id="contest-end-timer" class="text-red-500 font-semibold"><span id="countdown-timer">Calculating...</span></p>
+            </div>
+            {% if problems %}
+            <div class="mb-3">
+                <ul class="flex flex-wrap gap-2">
+                    {% for problem in problems %}
+                    <li class="flex items-center text-sm justify-center rounded-2xl p-1 transition 
+                               {% if problem.id in accepted_problems %} bg-green-600 hover:bg-green-700 text-white 
+                               {% else %} bg-gray-700 hover:bg-gray-900 text-white {% endif %}">
+                        <a href="{{ url_for('problem', id=problem.id) }}" class="px-2 text-center">
+                            {{ loop.index }} -> 🗿✖ {{ solvers_count.get(problem.id, 0) }}
+                        </a>
+                    </li>
+                    {% else %}
+                        <p class="text-gray-500">No problems available.</p>
                     {% endfor %}
-                </select>
-    
-                <textarea name="code" rows="10" required
-                    class="w-full p-4 rounded-lg bg-gray-900 text-gray-300 border border-gray-700 focus:ring-2 focus:ring-pink-500 transition" placeholder="// Write your C++ code here..."></textarea>
-                
+                </ul>
+            </div>        
+            {% endif %}
+
+            <h1 class="text-3xl font-bold neon-text text-center mb-6">Submit Solution for {{ problem.title }} </h1>
+            <form method="POST" class="space-y-6">
+                <div class="block">
+                    <label for="language" class="font-semibold">Choose Language:</label>
+                    <select name="language" id="language"
+                        class="w-full p-3 rounded-lg bg-gray-800 border border-gray-700 focus:ring-2 focus:ring-pink-500 transition mt-2">
+                        {% for lang in ["cpp", "c", "python"] %}
+                        <option value="{{ lang }}" {% if lang == "cpp" %}selected{% endif %}>
+                            {{ lang.upper() }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                    <div class="editor-container mt-4">
+                        <div id="line-numbers" class="line-numbers">1</div>
+                        <textarea name="code" rows="10" id="code" required class="w-full p-3 rounded-lg bg-gray-900 text-gray-300 border border-gray-700 focus:ring-2 focus:ring-pink-500 transition" placeholder="// Write your C++ code here..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"></textarea>
+                    </div>
+                </div>
+
                 <div class="flex space-x-4">
                     {% for btn in [{"id": "run-button", "text": "Run", "bg": "blue"}, {"text": "Submit", "bg": "pink"}] %}
                     <button type="{{ 'button' if btn.id else 'submit' }}" id="{{ btn.id | default('') }}"
@@ -64,7 +110,6 @@
                     {% endfor %}
                 </div>
             </form>
-
             <div id="run-results" class="mt-6 text-gray-300"></div>
         </div>
     </div>
@@ -103,5 +148,122 @@
             console.error("Error:", error);
         }
     });
+
+    const textarea = document.getElementById("code");
+    const lineNumbers = document.getElementById("line-numbers");
+
+    // Auto-update line numbers
+    function updateLineNumbers() {
+        const lines = textarea.value.split("\n").length;
+        lineNumbers.innerHTML = Array.from({ length: lines }, (_, i) => i + 1).join("<br>");
+    }
+
+    textarea.addEventListener("input", updateLineNumbers);
+    textarea.addEventListener("scroll", () => {
+        lineNumbers.scrollTop = textarea.scrollTop;
+    });
+
+    updateLineNumbers(); // Initialize line numbers
+    document.getElementById("code").addEventListener("keydown", function (event) {
+        if (event.key === "Tab") {
+            event.preventDefault(); // Prevent default tab behavior (focus shift)
+
+            const start = this.selectionStart;
+            const end = this.selectionEnd;
+
+            // Insert tab at the cursor's position
+            this.value = this.value.substring(0, start) + "\t" + this.value.substring(end);
+
+            // Move the cursor after the inserted tab
+            this.selectionStart = this.selectionEnd = start + 1;
+
+            // Dispatch the 'input' event to trigger undo stack (to ensure Ctrl + Z works)
+            const inputEvent = new Event('input', { bubbles: true });
+            this.dispatchEvent(inputEvent);
+        }
+    });
+
+    function copyToClipboard(elementId) {
+        // Get the text content of the element
+        var textToCopy = document.getElementById(elementId).textContent;
+        
+        // Create a temporary textarea to copy the text
+        var textArea = document.createElement("textarea");
+        textArea.value = textToCopy;
+        document.body.appendChild(textArea);
+        
+        // Select and copy the text
+        textArea.select();
+        document.execCommand("copy");
+        
+        // Remove the textarea from the DOM
+        document.body.removeChild(textArea);
+    }
+    {% if end_time %}
+        const contestEndTime = new Date("{{ end_time.strftime('%Y-%m-%dT%H:%M:%S') }}").getTime();
+    {% else %}
+        const contestEndTime = Date.now() + 20 * 60 * 1000; // Default to 20 minutes later
+    {% endif %}
+    const countdownTimer = document.getElementById('countdown-timer');
+    const contestEndTimer = document.getElementById('contest-end-timer');
+
+    const updateCountdown = () => {
+        const currentTime = Date.now();
+        const timeLeft = contestEndTime - currentTime;
+
+        if (timeLeft > 0) {
+            const h = Math.floor(timeLeft / 3600000);
+            const m = Math.floor((timeLeft % 3600000) / 60000);
+            const s = Math.floor((timeLeft % 60000) / 1000);
+            countdownTimer.innerText = `${h}h ${m}m ${s}s`;
+        } else {
+            countdownTimer.innerText = "Contest Ended!";
+            contestEndTimer.classList.add("text-green-500");
+            contestEndTimer.innerText = "The contest has ended!";
+            clearInterval(countdownInterval);
+            if(timeLeft == 0) {
+            setTimeout(() => {
+                window.location.reload(); // Reload the page
+            }, 1000);
+        }
+        }
+    };
+
+    const countdownInterval = setInterval(updateCountdown, 1000);
+    updateCountdown(); // Call once immediately to avoid delay
 </script>
+
+<style>
+    /* Editor styles */
+    .editor-container {
+        display: flex;
+        height: 80vh;
+        border: 1px solid #2d3748;
+        border-radius: 8px;
+        overflow: hidden;
+    }
+
+    .line-numbers {
+        width: 40px;
+        background: #1a202c;
+        padding: 10px;
+        text-align: right;
+        color: #718096;
+        font-family: monospace;
+        user-select: none;
+        overflow: hidden;
+    }
+
+    textarea {
+        flex: 1;
+        resize: none;
+        background: #2d3748;
+        color: #e2e8f0;
+        font-family: monospace;
+        padding: 0px;
+        outline: none;
+        border: none;
+        height: 100%;
+    }
+</style>
 {% endblock %}
