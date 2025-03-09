@@ -4,13 +4,14 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Offline Judge</title>
-  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- <script src="https://cdn.tailwindcss.com"></script> -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/theme.css') }}">
 </head>
 <body class="relative">
 
   <!-- Top Navbar: Desktop and Mobile -->
-  <nav class="glass-glow p-4 mx-6 mt-6 flex justify-between items-center">
+  <nav class="glass p-4 mx-6 mt-6 flex justify-between items-center">
     <a href="{{ url_for('index') }}" class="text-2xl neon-text">Offline Judge</a>
     <div class="hidden lg:flex space-x-6">
       <a href="{{ url_for('leaderboard') }}" class="neon-hover">Leaderboard</a>
@@ -108,7 +109,7 @@
     {% block content %}{% endblock %}
   </div>
 
-  <footer class="text-center py-4 glass mx-6 mt-6">
+  <footer class="text-center py-4 glass-glow mx-6 mt-6">
     <p class="text-xs text-gray-400 md:text-sm">© 2025 Offline Judge | The Future of Competitive Coding.</p>
   </footer>
 

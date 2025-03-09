@@ -68,21 +68,39 @@ class ProblemHandler(BaseHandler):
     def problem(id):
         p = Problem.query.get_or_404(id)
         contests_with_problem = Contest.query.filter(Contest.problems.any(Problem.id == id)).all()
+
         problems = []
-        for contest in contests_with_problem:
-            problems.extend(contest.problems)
+        for current_contest in contests_with_problem:
+            problems.extend(current_contest.problems)
+
         solvers = dict(db.session.query(Submission.problem_id, func.count(func.distinct(Submission.user_id)))
                     .join(User)
                     .filter(User.role == 'participant', Submission.status == 'Accepted')
                     .group_by(Submission.problem_id)
                     .all())
-        start_time, end_time = None, None
-        for contest in contests_with_problem:
-            if contest.start_time:
-                start_time = contest.start_time
-                end_time = contest.end_time
-            if contest.start_time > datetime.now(): return redirect(url_for('problems', contest_id=contest.id))
-        return render_template('problem.html', problem=p, description=p.description or "Description not available.", sample_test_cases=TestCase.query.filter_by(problem_id=id, is_sample=True).all(),problems=problems,solvers_count=solvers,start_time=start_time,end_time=end_time)
+
+        start_time, end_time, contest = None, None, None
+        contest = contests_with_problem[0] if contests_with_problem else None  # Select first contest if exists
+
+        for current_contest in contests_with_problem:
+            if current_contest.start_time:
+                start_time = current_contest.start_time
+                end_time = current_contest.end_time
+
+            if current_contest.start_time > datetime.now():
+                return redirect(url_for('problems', contest_id=current_contest.id))
+
+        accepted_problems = set(
+            problem_id for (problem_id,) in db.session.query(Submission.problem_id)
+            .filter(Submission.user_id == current_user.id, Submission.status == "Accepted")
+            .all()
+        )
+
+        return render_template('problem.html', problem=p, description=p.description or "Description not available.", 
+                            sample_test_cases=TestCase.query.filter_by(problem_id=id, is_sample=True).all(), 
+                            problems=problems, solvers_count=solvers, start_time=start_time, end_time=end_time, 
+                            contest_id=contest.id if contest else None, accepted_problems=accepted_problems)
+
 
     @staticmethod
     @login_required

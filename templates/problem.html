@@ -59,18 +59,25 @@
 
     <div class="flex justify-center items-center max-h-4xl w-full">
         <div class="glass p-8 rounded-lg w-full max-w-4xl shadow-lg min-h-[calc(100vh-250px)]">
-            <p id="contest-end-timer" class="text-red-500 font-semibold mb-2 text-end mt-[-15px]"><span id="countdown-timer">Calculating...</span></p>
+            <div class="flex gap-4 mb-2 mt-[-15px] items-start justify-end">
+                {% if problems %}
+                <a href="{{ url_for('contest_detail', contest_id=contest_id) }}" class="glass py-1 px-2 mt-[-5px]">🏆 Leaderboard</a>
+                {% endif %}
+                <p id="contest-end-timer" class="text-red-500 font-semibold"><span id="countdown-timer">Calculating...</span></p>
+            </div>
             {% if problems %}
             <div class="mb-3">
                 <ul class="flex flex-wrap gap-2">
                     {% for problem in problems %}
-                    <li class="flex items-center text-sm flex items-center justify-center bg-gray-700 text-white rounded-2xl p-1 hover:bg-gray-900 transition">
+                    <li class="flex items-center text-sm justify-center rounded-2xl p-1 transition 
+                               {% if problem.id in accepted_problems %} bg-green-600 hover:bg-green-700 text-white 
+                               {% else %} bg-gray-700 hover:bg-gray-900 text-white {% endif %}">
                         <a href="{{ url_for('problem', id=problem.id) }}" class="px-2 text-center">
-                            {{ loop.index }} -> 👤✖ {{ solvers_count.get(problem.id, 0) }}
+                            {{ loop.index }} -> 🗿✖ {{ solvers_count.get(problem.id, 0) }}
                         </a>
                     </li>
                     {% else %}
-                    <p class="text-gray-500">No problems available.</p>
+                        <p class="text-gray-500">No problems available.</p>
                     {% endfor %}
                 </ul>
             </div>        
@@ -90,8 +97,11 @@
                     </select>
                     <div class="editor-container mt-4">
                         <div id="line-numbers" class="line-numbers">1</div>
-                        <textarea name="code" rows="10" id="code" spellcheck="false" required
-                            class="w-full p-4 rounded-lg bg-gray-900 text-gray-300 border border-gray-700 focus:ring-2 focus:ring-pink-500 transition"  autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="off"  placeholder="// Write your C++ code here..."></textarea>
+                        <textarea name="code" rows="10" id="code" required
+                            class="w-full p-4 rounded-lg bg-gray-900 text-gray-300 border border-gray-700 focus:ring-2 focus:ring-pink-500 transition"  
+                            autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"  
+                            placeholder="// Write your C++ code here...">
+                        </textarea>
                     </div>
                 </div>
 
