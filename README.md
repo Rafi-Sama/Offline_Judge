@@ -51,6 +51,14 @@
 > Re-running the file should work.
 
 </details>
+<details>
+  <summary>Style Breaks</summary>
+
+> The project is corrently running on cdn however you can find commented link of main.css in base.html
+
+> Uncomment it and save.
+
+</details>
 
 ## Support for more features
 
