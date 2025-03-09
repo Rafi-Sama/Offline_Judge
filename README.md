@@ -35,7 +35,7 @@
 - Install and setup the python and cpp compilers (MINGW)
 - No internet is required but all participent and host must be connected to the same network or router
 
-### On Windows
+### On Any System
 
 ## Quick Tutorial
 
