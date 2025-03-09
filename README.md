@@ -39,7 +39,7 @@
 
 ## Quick Tutorial
 
-https://github.com/Rafi-Sama/Offline_Judge/static/assets/tutorial.mp4
+[https://github.com/Rafi-Sama/Offline_Judge/static/assets/tutorial.mp4](https://github.com/user-attachments/assets/20b01f4c-911c-43c9-830e-2a241acccb8f)
 
 ## FAQ
 
