@@ -71,6 +71,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 el.innerText = `Starts in: ${h}h ${m}m ${s}s`;
             } else {
                 el.innerText = "Contest Started!";
+                setTimeout(() => { window.location.reload(); }, 1000);
                 clearInterval(interval);
                 if (enterButton) setTimeout(() => window.location.href = enterButton.href, 1000);
             }

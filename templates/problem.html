@@ -97,11 +97,7 @@
                     </select>
                     <div class="editor-container mt-4">
                         <div id="line-numbers" class="line-numbers">1</div>
-                        <textarea name="code" rows="10" id="code" required
-                            class="w-full p-4 rounded-lg bg-gray-900 text-gray-300 border border-gray-700 focus:ring-2 focus:ring-pink-500 transition"  
-                            autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"  
-                            placeholder="// Write your C++ code here...">
-                        </textarea>
+                        <textarea name="code" rows="10" id="code" required class="w-full p-3 rounded-lg bg-gray-900 text-gray-300 border border-gray-700 focus:ring-2 focus:ring-pink-500 transition" placeholder="// Write your C++ code here..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"></textarea>
                     </div>
                 </div>
 
@@ -168,12 +164,6 @@
     });
 
     updateLineNumbers(); // Initialize line numbers
-
-    function resizeEditor(e) {
-        if (!isResizing) return;
-        let newWidth = e.clientX - textarea.getBoundingClientRect().left;
-        textarea.style.width = `${newWidth}px`;
-    }
     document.getElementById("code").addEventListener("keydown", function (event) {
         if (event.key === "Tab") {
             event.preventDefault(); // Prevent default tab behavior (focus shift)
@@ -270,7 +260,7 @@
         background: #2d3748;
         color: #e2e8f0;
         font-family: monospace;
-        padding: 10px;
+        padding: 0px;
         outline: none;
         border: none;
         height: 100%;
